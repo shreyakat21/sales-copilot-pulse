@@ -244,6 +244,37 @@
     box-shadow: none;
   }
 
+  .ghost-btn {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border-soft);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .ghost-btn:hover { border-color: var(--accent-dim); color: var(--text); }
+
+  .action-group { display: flex; align-items: center; gap: 10px; }
+
+  .copy-btn {
+    background: var(--bg-card);
+    color: var(--text-dim);
+    border: 1px solid var(--border-soft);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 100px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { border-color: var(--ok); color: var(--ok); }
+  .copy-btn.copied { border-color: var(--ok); color: var(--ok); }
+
   .error-banner {
     display: none;
     background: rgba(255, 90, 60, 0.1);
@@ -354,6 +385,17 @@
     font-weight: 700;
   }
 
+  .stage-latency {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 100px;
+    padding: 2px 7px;
+  }
+
   .stage-caption {
     font-size: 11px;
     color: var(--text-faint);
@@ -445,6 +487,14 @@
     color: var(--text-dim);
     margin: 0 0 14px;
   }
+
+  .log-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .log-panel-head h3 { margin: 0; }
 
   .obj-bar-row {
     display: flex;
@@ -553,7 +603,10 @@
       <textarea id="callInput" placeholder="Paste or type the call notes / customer's words here... e.g. &quot;Customer said the treadmill is too expensive and they don't really have room for it in their apartment, but they mentioned wanting to lose weight before a wedding in the spring.&quot;"></textarea>
       <div class="input-actions">
         <div class="samples" id="sampleBtns"></div>
-        <button class="run-btn" id="runBtn">Run call →</button>
+        <div class="action-group">
+          <button class="ghost-btn" id="resetBtn">New call</button>
+          <button class="run-btn" id="runBtn">Run call →</button>
+        </div>
       </div>
     </div>
 
@@ -566,22 +619,22 @@
 
     <div class="stage-grid" id="stageGrid">
       <div class="stage-card pending" id="card-1">
-        <div class="stage-head"><div class="stage-num">1</div><div class="stage-title">Extract</div></div>
+        <div class="stage-head"><div class="stage-num">1</div><div class="stage-title">Extract</div><span class="stage-latency" id="latency-1"></span></div>
         <div class="stage-caption">Reads the raw call notes and pulls out budget, space, goals, and objections.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
       <div class="stage-card pending" id="card-2">
-        <div class="stage-head"><div class="stage-num">2</div><div class="stage-title">Recommend</div></div>
+        <div class="stage-head"><div class="stage-num">2</div><div class="stage-title">Recommend</div><span class="stage-latency" id="latency-2"></span></div>
         <div class="stage-caption">Matches the extracted profile to the best-fit product and explains why.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
       <div class="stage-card pending" id="card-3">
-        <div class="stage-head"><div class="stage-num">3</div><div class="stage-title">Respond</div></div>
+        <div class="stage-head"><div class="stage-num">3</div><div class="stage-title">Respond</div><span class="stage-latency" id="latency-3"></span></div>
         <div class="stage-caption">Drafts a rebuttal for any objection and flags the upsell moment.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
       <div class="stage-card pending" id="card-4">
-        <div class="stage-head"><div class="stage-num">4</div><div class="stage-title">Log</div></div>
+        <div class="stage-head"><div class="stage-num">4</div><div class="stage-title">Log</div><span class="stage-latency" id="latency-4"></span></div>
         <div class="stage-caption">Writes the CRM record fields and a follow-up email draft — shaped to map onto Salesforce Task + Opportunity objects.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
@@ -615,7 +668,10 @@
     </div>
 
     <div class="log-panel">
-      <h3>Call log</h3>
+      <div class="log-panel-head">
+        <h3>Call log</h3>
+        <button class="ghost-btn" id="exportCsvBtn">Export CSV ↓</button>
+      </div>
       <div id="logTableWrap"><div class="empty-state">Nothing here yet.</div></div>
     </div>
   </section>
@@ -794,13 +850,66 @@ function resetCards() {
   for (let i = 1; i <= 4; i++) {
     setCardState(i, 'pending');
     setCardBody(i, '<span class="placeholder-dot">Waiting for input</span>');
+    setLatency(i, '');
   }
   updatePulseFill(0);
+}
+function setLatency(n, text) {
+  document.getElementById('latency-' + n).textContent = text;
+}
+async function timedStage(n, fn) {
+  const start = performance.now();
+  const result = await fn();
+  setLatency(n, Math.round(performance.now() - start) + 'ms');
+  return result;
 }
 
 // --- Session state for Team Pulse ---
 let sessionStart = Date.now();
 let callLog = [];
+let lastEmailDraft = { subject: '', body: '' };
+
+async function copyEmailDraft() {
+  const text = `Subject: ${lastEmailDraft.subject}\n\n${lastEmailDraft.body}`;
+  try {
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('copyEmailBtn');
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  } catch (e) {
+    showError('Could not copy to clipboard — your browser may be blocking it.');
+  }
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('callInput').value = '';
+  hideError();
+  resetCards();
+});
+
+document.getElementById('exportCsvBtn').addEventListener('click', () => {
+  if (callLog.length === 0) { showError('No calls logged yet — run one first.'); return; }
+  const headers = ['Time', 'Objection', 'Recommended Product', 'Opportunity Stage', 'Task Subject', 'Task Description', 'Next Step'];
+  const csvEscape = v => `"${String(v || '').replace(/"/g, '""')}"`;
+  const rows = callLog.map(c => [
+    c.time,
+    c.extract.objection && c.extract.objection.toLowerCase() !== 'none' ? c.extract.objection : '',
+    c.recommend.product,
+    c.log.opportunity_stage,
+    c.log.task_subject,
+    c.log.task_description,
+    c.log.next_step
+  ].map(csvEscape).join(','));
+  const csv = [headers.map(csvEscape).join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pulse-call-log-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
 
 function renderPulse() {
   document.getElementById('statCalls').textContent = callLog.length;
@@ -875,7 +984,7 @@ document.getElementById('runBtn').addEventListener('click', async () => {
   try {
     setCardLoading(1);
     updatePulseFill(10);
-    const extract = await runExtract(notes);
+    const extract = await timedStage(1, () => runExtract(notes));
     setCardState(1, 'done');
     setCardBody(1, [
       fieldRow('Budget', extract.budget),
@@ -887,27 +996,29 @@ document.getElementById('runBtn').addEventListener('click', async () => {
     updatePulseFill(30);
 
     setCardLoading(2);
-    const recommend = await runRecommend(notes, extract);
+    const recommend = await timedStage(2, () => runRecommend(notes, extract));
     setCardState(2, 'done');
     setCardBody(2, `<p><b>${recommend.product}</b></p><p>${recommend.reason}</p>`);
     updatePulseFill(55);
 
     setCardLoading(3);
-    const respond = await runRespond(notes, extract, recommend);
+    const respond = await timedStage(3, () => runRespond(notes, extract, recommend));
     setCardState(3, 'done');
     setCardBody(3, `<p><b>Say this:</b> "${respond.rebuttal}"</p><p><b>Upsell:</b> ${respond.upsell_note}</p>`);
     updatePulseFill(80);
 
     setCardLoading(4);
-    const log = await runLog(notes, extract, recommend, respond);
+    const log = await timedStage(4, () => runLog(notes, extract, recommend, respond));
     setCardState(4, 'done');
+    lastEmailDraft = { subject: log.email_subject || '', body: log.email_body || '' };
     setCardBody(4, `
       ${fieldRow('Task.Subject', log.task_subject)}
       ${fieldRow('Opportunity.StageName', log.opportunity_stage)}
       <p style="margin-top:10px;"><b>Task.Description:</b> ${log.task_description}</p>
       <p><b>Next step:</b> ${log.next_step}</p>
-      <p><b>Follow-up email:</b><br><i>${log.email_subject}</i><br>${log.email_body}</p>
+      <p><b>Follow-up email:</b> <button class="copy-btn" id="copyEmailBtn">Copy</button><br><i>${log.email_subject}</i><br>${log.email_body}</p>
     `);
+    document.getElementById('copyEmailBtn').addEventListener('click', copyEmailDraft);
     updatePulseFill(100);
 
     callLog.push({
