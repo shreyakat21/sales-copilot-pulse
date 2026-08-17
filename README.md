@@ -27,6 +27,19 @@ Every call run also rolls up into a **Team Pulse** dashboard — objection count
 - Objection frequency bar chart
 - Full call log table, exportable to CSV
 
+## Technologies used
+
+- **HTML5** — single-page structure, no templating
+- **CSS3** — custom properties (CSS variables) for theming, flexbox/grid layout, no framework or preprocessor
+- **JavaScript (ES6+, vanilla)** — no build step, no bundler, no frontend framework
+- **Groq API** (`openai/gpt-oss-20b`) — LLM inference, called via `fetch` with JSON-mode structured output
+- **Fetch API** — all HTTP calls to Groq
+- **Web Storage API (`localStorage`)** — persists the user's API key client-side between visits
+- **Clipboard API** (`navigator.clipboard`) — one-click copy on the generated email draft
+- **Blob / URL API** — generates and downloads the CSV export client-side, no server involved
+- **Git & GitHub** — version control and source hosting
+- **GitHub Pages** — static hosting/deployment, no backend server
+
 ## Running it locally
 
 No build step, no dependencies. Just open the file:
