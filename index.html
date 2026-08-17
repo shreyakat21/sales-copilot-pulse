@@ -582,7 +582,7 @@
       </div>
       <div class="stage-card pending" id="card-4">
         <div class="stage-head"><div class="stage-num">4</div><div class="stage-title">Log</div></div>
-        <div class="stage-caption">Writes the CRM call summary and a follow-up email draft.</div>
+        <div class="stage-caption">Writes the CRM record fields and a follow-up email draft — shaped to map onto Salesforce Task + Opportunity objects.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
     </div>
@@ -752,8 +752,14 @@ Return JSON with keys: rebuttal (string, 1-3 sentences, conversational), upsell_
 
 async function runLog(notes, extract, recommend, respond) {
   const sys = stageSystemPrompt() + `
-Write a CRM-ready call summary and a short follow-up email draft based on the full call.
-Return JSON with keys: crm_summary (2-3 sentence professional summary), next_step (short string, e.g. "Send pricing sheet, follow up in 3 days"), email_subject (string), email_body (string, 3-5 sentences, friendly and professional, signed "The iFIT Team").`;
+Write CRM record fields and a short follow-up email draft based on the full call. Shape the fields as if populating a Salesforce Task and Opportunity record.
+Return JSON with exactly these keys:
+- task_subject (string, <=80 chars, like a Salesforce Task.Subject, e.g. "Call: Price objection - treadmill")
+- task_description (string, 2-3 sentence professional call summary, like Task.Description)
+- opportunity_stage (string, one of: "Qualification", "Needs Analysis", "Proposal/Price Quote", "Negotiation/Review", "Closed Won", "Closed Lost" — like Opportunity.StageName, pick the best fit)
+- next_step (short string, like Task.ActivityDate follow-up note, e.g. "Send pricing sheet, follow up in 3 days")
+- email_subject (string)
+- email_body (string, 3-5 sentences, friendly and professional, signed "The iFIT Team")`;
   return callGroq(sys, `Original notes: "${notes}"\nExtracted: ${JSON.stringify(extract)}\nRecommendation: ${JSON.stringify(recommend)}\nResponse: ${JSON.stringify(respond)}`);
 }
 
@@ -838,14 +844,15 @@ function renderPulse() {
   } else {
     logWrap.innerHTML = `
       <table class="log-table">
-        <thead><tr><th>Time</th><th>Objection</th><th>Recommended</th><th>Summary</th></tr></thead>
+        <thead><tr><th>Time</th><th>Objection</th><th>Recommended</th><th>Opportunity Stage</th><th>Summary</th></tr></thead>
         <tbody>
           ${callLog.slice().reverse().map(c => `
             <tr>
               <td>${c.time}</td>
               <td>${c.extract.objection && c.extract.objection.toLowerCase() !== 'none' ? c.extract.objection : '—'}</td>
               <td><span class="prod-tag">${(c.recommend.product || '').split(' — ')[0]}</span></td>
-              <td>${c.log.crm_summary || ''}</td>
+              <td>${c.log.opportunity_stage || ''}</td>
+              <td>${c.log.task_description || ''}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -895,7 +902,9 @@ document.getElementById('runBtn').addEventListener('click', async () => {
     const log = await runLog(notes, extract, recommend, respond);
     setCardState(4, 'done');
     setCardBody(4, `
-      <p><b>CRM note:</b> ${log.crm_summary}</p>
+      ${fieldRow('Task.Subject', log.task_subject)}
+      ${fieldRow('Opportunity.StageName', log.opportunity_stage)}
+      <p style="margin-top:10px;"><b>Task.Description:</b> ${log.task_description}</p>
       <p><b>Next step:</b> ${log.next_step}</p>
       <p><b>Follow-up email:</b><br><i>${log.email_subject}</i><br>${log.email_body}</p>
     `);
