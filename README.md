@@ -32,9 +32,8 @@ Every call run also rolls up into a **Team Pulse** dashboard — objection count
 - **HTML5** — single-page structure, no templating
 - **CSS3** — custom properties (CSS variables) for theming, flexbox/grid layout, no framework or preprocessor
 - **JavaScript (ES6+, vanilla)** — no build step, no bundler, no frontend framework
-- **Groq API** (`openai/gpt-oss-20b`) — LLM inference, called via `fetch` with JSON-mode structured output
+- **Groq API** (`openai/gpt-oss-20b`) — LLM inference with JSON-mode structured output
 - **Fetch API** — all HTTP calls to Groq
-- **Web Storage API (`localStorage`)** — persists the user's API key client-side between visits
 - **Clipboard API** (`navigator.clipboard`) — one-click copy on the generated email draft
 - **Blob / URL API** — generates and downloads the CSV export client-side, no server involved
 - **Git & GitHub** — version control and source hosting
@@ -42,43 +41,22 @@ Every call run also rolls up into a **Team Pulse** dashboard — objection count
 
 ## Running it locally
 
-No build step, no dependencies. Just open the file:
-
-```bash
-open index.html
-```
-
-Or serve it locally (recommended — some browsers restrict local file fetch calls):
+No build step, no dependencies, no API key needed:
 
 ```bash
 python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
 
-## Setup
+## Deploying
 
-1. Get a free API key at https://console.groq.com/keys
-2. Open the page, paste your key into the "Groq key" field at the top (it's saved in your browser's local storage, never sent anywhere but Groq's API)
-3. Try one of the sample scenarios or paste in your own call notes, hit "Run call"
-
-## Deploying to GitHub Pages
-
-```bash
-git init
-git add .
-git commit -m "Pulse: sales call copilot"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/pulse.git
-git push -u origin main
-```
-
-Then on GitHub: **Settings → Pages → Deploy from branch → main → save**. Live at `https://YOUR_USERNAME.github.io/pulse/`.
+Push to `main`; GitHub Pages deploys from the `main` branch. The Groq key ships in `config.js`, so the live site works for anyone with the link.
 
 ## Notes on architecture
 
 - Single HTML file, vanilla JS, no framework — kept intentionally simple for a fast build
-- Uses Groq's free API (`openai/gpt-oss-20b`) via four sequential chat completion calls, one per stage, each using JSON mode for structured output
-- The API key is entered client-side and stored in `localStorage`, not committed to the repo — this avoids putting a secret in a public GitHub repo. In production this would route through a backend proxy instead of a client-supplied key.
+- Uses Groq's API (`openai/gpt-oss-20b`) via four sequential chat completion calls, one per stage, each using JSON mode for structured output
+- The Groq key is bundled in `config.js` so visitors can use the tool without signing up for anything. Because it's a static site, that key is visible to anyone who inspects the page; the tradeoff is accepted for a demo, and the fix for production is a small backend proxy (e.g. a serverless function) that holds the key server-side.
 - "Team Pulse" data is in-memory only (resets on page reload) — a real version would persist this server-side, but the front end already renders the aggregate view and CSV export it would need.
 
 ## Design decisions — why I built it this way
@@ -93,7 +71,7 @@ Then on GitHub: **Settings → Pages → Deploy from branch → main → save**.
 
 - **Groq instead of a hosted AI-platform demo.** I originally prototyped this using Claude directly, but switched to a real, standalone deployment (Groq API + GitHub Pages) so this is an actual shipped artifact — a live link, a real repo, a real API integration — rather than something that only runs inside another product's environment. That's a closer match to "built automations, AI tools, scripts, or applications" in the qualifications.
 
-- **API key entered client-side and stored in `localStorage`, not hardcoded.** A real production tool would route this through a backend so the key is never exposed. For a static, no-backend deployment, hardcoding a key into a public repo would be worse than asking the user to supply their own — so I made that tradeoff explicit rather than hiding it.
+- **A bundled API key instead of a user-supplied one.** The first version asked each user to paste their own Groq key, which meant nobody could try the tool without signing up for Groq first. I bundled a key with the site so anyone with the link can use it immediately. On a static host that key is public, so I capped output tokens per call and would move it behind a serverless proxy (with origin checks and rate limiting) before any real production use.
 
 - **Log stage output shaped as Salesforce fields (`Task.Subject`, `Task.Description`, `Opportunity.StageName`)**, instead of generic "summary" text. Salesforce isn't required for this role, but it is one of the platforms mentioned, so I shaped the output to show I understand what a real integration target would look like, even without building real OAuth.
 

@@ -102,14 +102,10 @@
     white-space: nowrap;
   }
 
-  .key-field input {
-    background: transparent;
-    border: none;
-    outline: none;
+  .key-field .model-name {
     color: var(--text);
     font-family: var(--mono);
     font-size: 12px;
-    width: 170px;
   }
 
   .key-status {
@@ -120,13 +116,6 @@
     flex-shrink: 0;
   }
   .key-status.set { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
-
-  .key-help {
-    font-size: 11px;
-    color: var(--text-faint);
-  }
-  .key-help a { color: var(--accent); text-decoration: none; }
-  .key-help a:hover { text-decoration: underline; }
 
   nav.tabs {
     display: flex;
@@ -581,12 +570,11 @@
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-      <div class="key-field">
-        <span class="key-status" id="keyStatus"></span>
-        <label for="apiKey">Groq key</label>
-        <input type="password" id="apiKey" placeholder="gsk_..." autocomplete="off" />
+      <div class="key-field" title="No API key needed">
+        <span class="key-status set"></span>
+        <label>Model</label>
+        <span class="model-name">gpt-oss-20b · Groq</span>
       </div>
-      <span class="key-help">Free key at <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a></span>
     </div>
   </header>
 
@@ -677,13 +665,16 @@
   </section>
 
   <footer>
-    Pulse — built for the iFIT Junior AI Engineer take-home. Runs entirely client-side via the Groq API; key is stored only in this browser's local storage.
+    Pulse — built for the iFIT Junior AI Engineer take-home. Runs entirely client-side via the Groq API — no sign-up or key needed.
   </footer>
 </div>
 
+<script src="config.js"></script>
 <script>
 const MODEL = "openai/gpt-oss-20b";
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+// Key comes from config.js so visitors don't need their own.
+const GROQ_KEY = (window.PULSE_CONFIG && window.PULSE_CONFIG.groqKey) || "";
 
 const samples = [
   {
@@ -709,18 +700,8 @@ samples.forEach(s => {
   sampleWrap.appendChild(btn);
 });
 
-// --- API key persistence ---
-const keyInput = document.getElementById('apiKey');
-const keyStatus = document.getElementById('keyStatus');
-keyInput.value = localStorage.getItem('pulse_groq_key') || '';
-updateKeyStatus();
-keyInput.addEventListener('input', () => {
-  localStorage.setItem('pulse_groq_key', keyInput.value.trim());
-  updateKeyStatus();
-});
-function updateKeyStatus() {
-  keyStatus.classList.toggle('set', keyInput.value.trim().length > 10);
-}
+// Clean up keys saved by the old client-side version of Pulse.
+try { localStorage.removeItem('pulse_groq_key'); } catch (e) {}
 
 // --- Tabs ---
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -735,28 +716,33 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
 // --- Groq call helper ---
 async function callGroq(systemPrompt, userPrompt) {
-  const key = keyInput.value.trim();
-  if (!key) throw new Error("Paste a Groq API key at the top of the page first (free at console.groq.com/keys).");
-
-  const res = await fetch(GROQ_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + key
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      temperature: 0.4,
-      response_format: { type: "json_object" }
-    })
-  });
+  if (!GROQ_KEY) throw new Error("No Groq key configured — check config.js.");
+  let res;
+  try {
+    res = await fetch(GROQ_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + GROQ_KEY
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        temperature: 0.4,
+        max_tokens: 1500,
+        response_format: { type: "json_object" }
+      })
+    });
+  } catch (e) {
+    throw new Error("Could not reach Groq. Check your connection and try again.");
+  }
 
   if (!res.ok) {
     const body = await res.text();
+    if (res.status === 429) throw new Error("Pulse is getting a lot of use right now — wait a minute and try again.");
     throw new Error(`Groq API error (${res.status}): ${body.slice(0, 200)}`);
   }
   const data = await res.json();
