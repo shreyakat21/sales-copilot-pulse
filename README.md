@@ -1,19 +1,24 @@
 # Pulse — Sales Call Copilot
 
-Built for the iFIT Junior AI Engineer take-home assignment.
+An AI copilot for sales reps: paste in what a customer said, and Pulse extracts the key facts, recommends the right product from *your* catalog, drafts what to say back, and writes up the CRM record and follow-up email.
 
 ## What it is
 
-A single-page tool that helps a sales rep during and after a customer call:
+A single-page tool that helps a sales rep during and after a customer call, for any company and product line:
 
-1. **Extract** — pulls structured facts (budget, space, goals, objection) out of raw call notes
-2. **Recommend** — matches the best-fit product with a reason tied to what the customer said
-3. **Respond** — drafts a tailored objection rebuttal and flags the upsell moment
+1. **Extract** — pulls structured facts (budget, timeline, decision maker, needs, objection) out of raw call notes
+2. **Recommend** — matches the best-fit product from your catalog with a reason tied to what the customer said
+3. **Respond** — drafts a tailored objection rebuttal and flags the upgrade/add-on moment
 4. **Log** — writes CRM record fields (shaped as Salesforce `Task`/`Opportunity` fields) and a follow-up email draft
 
 Every call run also rolls up into a **Team Pulse** dashboard — objection counts, most-recommended product, and a running call log a manager can export to CSV, so patterns across the team are visible without compiling anything by hand.
 
 ## Features
+
+**Your company & products**
+- Set your company name and product catalog (one product per line) — Pulse recommends only from that list and signs follow-up emails with your company name
+- Ships with an example catalog (a fictional B2B software company) so it works out of the box
+- Saved in the browser, so each rep's catalog sticks between visits
 
 **Call Assistant**
 - Free-form input, or one-click sample scenarios to try it instantly
@@ -34,6 +39,7 @@ Every call run also rolls up into a **Team Pulse** dashboard — objection count
 - **JavaScript (ES6+, vanilla)** — no build step, no bundler, no frontend framework
 - **Groq API** (`openai/gpt-oss-20b`) — LLM inference with JSON-mode structured output
 - **Fetch API** — all HTTP calls to Groq
+- **Web Storage API (`localStorage`)** — remembers each user's company name and product catalog
 - **Clipboard API** (`navigator.clipboard`) — one-click copy on the generated email draft
 - **Blob / URL API** — generates and downloads the CSV export client-side, no server involved
 - **Git & GitHub** — version control and source hosting
@@ -61,22 +67,24 @@ Push to `main`; GitHub Pages deploys from the `main` branch. The Groq key ships 
 
 ## Design decisions — why I built it this way
 
-- **Four sequential stages instead of one big prompt.** Each stage (Extract → Recommend → Respond → Log) is a separate, inspectable API call rather than one call doing everything. That makes the reasoning traceable — a rep or manager can see exactly what the AI concluded at each step instead of getting an opaque final answer, which matters for a role that requires explaining solutions to both technical and non-technical teammates.
+- **Four sequential stages instead of one big prompt.** Each stage (Extract → Recommend → Respond → Log) is a separate, inspectable API call rather than one call doing everything. That makes the reasoning traceable — a rep or manager can see exactly what the AI concluded at each step instead of getting an opaque final answer, which matters when reps and managers need to trust and explain what the tool suggested.
 
-- **Two stages for productivity, two for revenue.** Extract and Log eliminate the manual work of taking notes and writing them up. Recommend and Respond are the "help them close more deals" half — better product fit, better objection handling in the moment. I split it this way on purpose so the tool visibly addresses both halves of the assignment prompt, not just one.
+- **Two stages for productivity, two for revenue.** Extract and Log eliminate the manual work of taking notes and writing them up. Recommend and Respond are the "help them close more deals" half — better product fit, better objection handling in the moment. Splitting it this way means the tool saves reps time *and* helps them sell, not just one or the other.
 
-- **Fully interactive, not a canned demo.** The input is a free-text box, not a fixed scenario — anyone reviewing it can type their own customer conversation and get a live result. Sample buttons exist only to make it easy to try instantly, not to replace real input.
+- **Fully interactive, not a canned demo.** The input is a free-text box, not a fixed scenario — anyone can type their own customer conversation and get a live result. Sample buttons exist only to make it easy to try instantly, not to replace real input.
 
-- **A Team Pulse dashboard, not just a single-call tool.** Most versions of this assignment probably stop at "type in a call, get a response." I added a rollup view because the actual JD calls out building "dashboards, reporting tools, and lightweight applications" for Commercial teams — a single-rep tool doesn't show that, a team-level view does.
+- **Bring-your-own catalog instead of hardcoded products.** Pulse started as a tool for a single company's product line. Making the company name and catalog editable turns it into a general sales copilot: the same four-stage pipeline works for SaaS plans, hardware, services, or anything else a rep sells, and the model is constrained to recommend only what's actually in the list.
 
-- **Groq instead of a hosted AI-platform demo.** I originally prototyped this using Claude directly, but switched to a real, standalone deployment (Groq API + GitHub Pages) so this is an actual shipped artifact — a live link, a real repo, a real API integration — rather than something that only runs inside another product's environment. That's a closer match to "built automations, AI tools, scripts, or applications" in the qualifications.
+- **A Team Pulse dashboard, not just a single-call tool.** A "type in a call, get a response" tool only helps one rep in the moment. The rollup view shows a manager patterns across calls — which objections keep coming up, which products get recommended most — without anyone compiling notes by hand.
+
+- **Groq instead of a hosted AI-platform demo.** I originally prototyped this using Claude directly, but switched to a real, standalone deployment (Groq API + GitHub Pages) so this is an actual shipped artifact — a live link, a real repo, a real API integration — rather than something that only runs inside another product's environment.
 
 - **A bundled API key instead of a user-supplied one.** The first version asked each user to paste their own Groq key, which meant nobody could try the tool without signing up for Groq first. I bundled a key with the site so anyone with the link can use it immediately. On a static host that key is public, so I capped output tokens per call and would move it behind a serverless proxy (with origin checks and rate limiting) before any real production use.
 
-- **Log stage output shaped as Salesforce fields (`Task.Subject`, `Task.Description`, `Opportunity.StageName`)**, instead of generic "summary" text. Salesforce isn't required for this role, but it is one of the platforms mentioned, so I shaped the output to show I understand what a real integration target would look like, even without building real OAuth.
+- **Log stage output shaped as Salesforce fields (`Task.Subject`, `Task.Description`, `Opportunity.StageName`)**, instead of generic "summary" text. Salesforce is the most common CRM, so shaping the output to its fields shows what a real integration target would look like, even without building real OAuth.
 
-- **Per-stage latency badges.** This is the one addition that's about being an *AI engineer* specifically rather than just a builder — it surfaces real model response time per call, which is a first step toward the kind of performance/cost awareness the JD asks for under "evaluate emerging AI tools and recommend opportunities to improve efficiency."
+- **Per-stage latency badges.** This surfaces real model response time per call — a first step toward the performance and cost awareness needed to evaluate and compare AI models in production.
 
-- **CSV export on the Team Pulse log.** A dashboard a manager can look at but not export from is only half useful — exporting ties directly back to the "reporting tools" line in the JD and is the kind of thing a rep's manager would actually ask for first.
+- **CSV export on the Team Pulse log.** A dashboard a manager can look at but not export from is only half useful — exporting is the kind of thing a sales manager would actually ask for first.
 
 - **Copy-to-clipboard on the follow-up email.** A small detail, but it's the difference between "the AI wrote something" and "the rep can actually use it in one click" — consistent with the tool's whole goal of removing manual steps, not just generating text.

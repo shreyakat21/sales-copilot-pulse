@@ -181,6 +181,55 @@
   textarea#callInput:focus { border-color: var(--accent-dim); }
   textarea#callInput::placeholder { color: var(--text-faint); }
 
+  details.catalog {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 14px;
+  }
+  details.catalog summary {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-dim);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  details.catalog summary::-webkit-details-marker { display: none; }
+  details.catalog summary::after { content: "Edit ▾"; font-size: 12px; color: var(--accent); }
+  details.catalog[open] summary::after { content: "Close ▴"; }
+  details.catalog summary b { color: var(--text); font-weight: 600; }
+  .catalog-body { margin-top: 14px; display: grid; gap: 12px; }
+  .catalog-body label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .catalog-body input, .catalog-body textarea {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 9px 12px;
+    outline: none;
+  }
+  .catalog-body textarea { min-height: 120px; resize: vertical; }
+  .catalog-body input:focus, .catalog-body textarea:focus { border-color: var(--accent-dim); }
+  .catalog-hint { font-size: 12px; color: var(--text-faint); }
+  .catalog-hint button {
+    background: none; border: none; color: var(--accent); cursor: pointer; font-size: 12px; padding: 0;
+  }
+
   .input-actions {
     display: flex;
     align-items: center;
@@ -586,9 +635,24 @@
   <!-- CALL ASSISTANT -->
   <section class="panel active" id="panel-call">
 
+    <details class="catalog" id="catalogPanel">
+      <summary><span>Selling for <b id="companyLabel">—</b> · <span id="productCount">0</span> products</span></summary>
+      <div class="catalog-body">
+        <div>
+          <label for="companyInput">Company name</label>
+          <input id="companyInput" type="text" placeholder="e.g. Acme Cloud" />
+        </div>
+        <div>
+          <label for="productsInput">Products — one per line: Name — who it's for / key points</label>
+          <textarea id="productsInput"></textarea>
+        </div>
+        <div class="catalog-hint">Pulse recommends from this list and signs follow-ups with your company name. Saved in this browser. <button type="button" id="catalogReset">Reset to example</button></div>
+      </div>
+    </details>
+
     <div class="input-card">
       <label class="title">What did the customer say?</label>
-      <textarea id="callInput" placeholder="Paste or type the call notes / customer's words here... e.g. &quot;Customer said the treadmill is too expensive and they don't really have room for it in their apartment, but they mentioned wanting to lose weight before a wedding in the spring.&quot;"></textarea>
+      <textarea id="callInput" placeholder="Paste or type the call notes / customer's words here... e.g. &quot;They like the product but said it's more than they budgeted this quarter, and they need sign-off from their VP before committing.&quot;"></textarea>
       <div class="input-actions">
         <div class="samples" id="sampleBtns"></div>
         <div class="action-group">
@@ -608,7 +672,7 @@
     <div class="stage-grid" id="stageGrid">
       <div class="stage-card pending" id="card-1">
         <div class="stage-head"><div class="stage-num">1</div><div class="stage-title">Extract</div><span class="stage-latency" id="latency-1"></span></div>
-        <div class="stage-caption">Reads the raw call notes and pulls out budget, space, goals, and objections.</div>
+        <div class="stage-caption">Reads the raw call notes and pulls out budget, timeline, needs, and objections.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
       <div class="stage-card pending" id="card-2">
@@ -665,7 +729,7 @@
   </section>
 
   <footer>
-    Pulse — built for the iFIT Junior AI Engineer take-home. Runs entirely client-side via the Groq API — no sign-up or key needed.
+    Pulse — AI sales call copilot. Runs entirely client-side via the Groq API — no sign-up or key needed.
   </footer>
 </div>
 
@@ -679,15 +743,15 @@ const GROQ_KEY = (window.PULSE_CONFIG && window.PULSE_CONFIG.groqKey) || "";
 const samples = [
   {
     label: "Price objection",
-    text: "Customer said the treadmill is too expensive and they don't really have room for it in their apartment, but they mentioned wanting to lose weight before a wedding in the spring."
+    text: "They like the product and the demo went well, but they said it's more than they budgeted for this quarter. Team of about 25. They'd need sign-off from their VP of Operations before committing to anything."
   },
   {
-    label: "Comparing brands",
-    text: "Customer is currently comparing us to Peloton. They have a home gym in their garage, budget isn't really a concern, they train for triathlons and want something that can handle serious mileage."
+    label: "Comparing competitors",
+    text: "They're evaluating us against two other vendors. Budget isn't the main concern — they care most about security reviews and SSO since they're a 400-person company in healthcare. They want to decide by end of next month."
   },
   {
     label: "Just browsing",
-    text: "Customer says they're 'just looking around' and not ready to buy anything today. They did mention their knees hurt when they run outside and they've been thinking about a bike instead."
+    text: "Said they're 'just looking around' and not ready to buy anything yet. Small team of 4, currently using spreadsheets, and mentioned they keep losing track of follow-ups with clients."
   }
 ];
 
@@ -756,37 +820,67 @@ async function callGroq(systemPrompt, userPrompt) {
 }
 
 // --- Stage prompts ---
-const PRODUCTS = [
-  "ProForm Carbon T7 Treadmill — compact, budget-friendly, foldable, good for small spaces",
-  "NordicTrack Commercial X32i Incline Trainer — premium, large footprint, for serious/competitive runners",
-  "iFIT Studio Bike — low-impact, joint-friendly, great for small spaces and beginners",
-  "Freestride Trainer FS14i — elliptical/stepper hybrid, very low impact, joint issues",
-  "ProForm Pro 9000 Treadmill — mid-range, durable, general fitness goals, some space needed"
-];
+// --- Company + product catalog (editable in the UI, saved per browser) ---
+const DEFAULT_COMPANY = "Acme Cloud";
+const DEFAULT_PRODUCTS = [
+  "Starter Plan — for teams under 10, simple setup, lowest price, monthly billing",
+  "Growth Plan — for growing teams of 10-100, automations and integrations, annual discount",
+  "Enterprise Plan — for 100+ seats, SSO, security reviews, dedicated support, custom contracts",
+  "Onboarding Package — add-on, guided setup and training for teams that need help getting started",
+  "Analytics Add-on — add-on, dashboards and reporting for managers who need visibility"
+].join("\n");
 
-function stageSystemPrompt(stageName) {
-  const base = "You are part of an internal sales-call assistant for iFIT (fitness equipment). Always respond with ONLY a single valid JSON object, no markdown, no commentary.";
-  return base;
+const companyInput = document.getElementById('companyInput');
+const productsInput = document.getElementById('productsInput');
+function loadCatalog() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem('pulse_catalog') || 'null'); } catch (e) {}
+  companyInput.value = (saved && saved.company) || DEFAULT_COMPANY;
+  productsInput.value = (saved && saved.products) || DEFAULT_PRODUCTS;
+  updateCatalogSummary();
+}
+function saveCatalog() {
+  try { localStorage.setItem('pulse_catalog', JSON.stringify({ company: companyInput.value, products: productsInput.value })); } catch (e) {}
+  updateCatalogSummary();
+}
+function getCompany() { return companyInput.value.trim() || "our company"; }
+function getProducts() { return productsInput.value.split("\n").map(l => l.trim()).filter(Boolean); }
+function updateCatalogSummary() {
+  document.getElementById('companyLabel').textContent = companyInput.value.trim() || '—';
+  document.getElementById('productCount').textContent = getProducts().length;
+}
+companyInput.addEventListener('input', saveCatalog);
+productsInput.addEventListener('input', saveCatalog);
+document.getElementById('catalogReset').addEventListener('click', () => {
+  companyInput.value = DEFAULT_COMPANY;
+  productsInput.value = DEFAULT_PRODUCTS;
+  saveCatalog();
+});
+loadCatalog();
+
+function stageSystemPrompt() {
+  return `You are part of an internal sales-call assistant for ${getCompany()}. Always respond with ONLY a single valid JSON object, no markdown, no commentary.`;
 }
 
 async function runExtract(notes) {
   const sys = stageSystemPrompt() + `
 Extract structured facts from raw sales call notes.
-Return JSON with exactly these keys: budget ("low"|"medium"|"high"|"unknown"), space ("small"|"medium"|"large"|"unknown"), goals (short string), objection (short string or "none"), fitness_level ("beginner"|"intermediate"|"advanced"|"unknown"), notes_summary (one sentence).`;
+Return JSON with exactly these keys: budget ("low"|"medium"|"high"|"unknown"), timeline (short string, e.g. "this month", "next quarter", or "unknown"), decision_maker (who signs off, short string, or "unknown"), needs (short string: what they're trying to solve), objection (short string or "none"), notes_summary (one sentence).`;
   return callGroq(sys, `Call notes:\n"""${notes}"""`);
 }
 
 async function runRecommend(notes, extract) {
   const sys = stageSystemPrompt() + `
 Given a customer profile, recommend exactly one product from this catalog:
-${PRODUCTS.map(p => "- " + p).join("\n")}
+${getProducts().map(p => "- " + p).join("\n")}
 Return JSON with keys: product (string, must match one catalog item's product name exactly), reason (1-2 sentences tied to the customer's specific situation).`;
   return callGroq(sys, `Original notes: "${notes}"\nExtracted profile: ${JSON.stringify(extract)}`);
 }
 
 async function runRespond(notes, extract, recommend) {
   const sys = stageSystemPrompt() + `
-Draft a short, natural rebuttal a sales rep can say out loud in response to the customer's objection, plus a note on whether/when to mention the iFIT membership upsell.
+Draft a short, natural rebuttal a sales rep can say out loud in response to the customer's objection, plus a note on whether/when to mention an upgrade or add-on from this catalog:
+${getProducts().map(p => "- " + p).join("\n")}
 If the objection is "none", still suggest a good closing line and an upsell moment.
 Return JSON with keys: rebuttal (string, 1-3 sentences, conversational), upsell_note (1 sentence).`;
   return callGroq(sys, `Original notes: "${notes}"\nExtracted profile: ${JSON.stringify(extract)}\nRecommended product: ${JSON.stringify(recommend)}`);
@@ -796,12 +890,12 @@ async function runLog(notes, extract, recommend, respond) {
   const sys = stageSystemPrompt() + `
 Write CRM record fields and a short follow-up email draft based on the full call. Shape the fields as if populating a Salesforce Task and Opportunity record.
 Return JSON with exactly these keys:
-- task_subject (string, <=80 chars, like a Salesforce Task.Subject, e.g. "Call: Price objection - treadmill")
+- task_subject (string, <=80 chars, like a Salesforce Task.Subject, e.g. "Call: Price objection - Growth Plan")
 - task_description (string, 2-3 sentence professional call summary, like Task.Description)
 - opportunity_stage (string, one of: "Qualification", "Needs Analysis", "Proposal/Price Quote", "Negotiation/Review", "Closed Won", "Closed Lost" — like Opportunity.StageName, pick the best fit)
 - next_step (short string, like Task.ActivityDate follow-up note, e.g. "Send pricing sheet, follow up in 3 days")
 - email_subject (string)
-- email_body (string, 3-5 sentences, friendly and professional, signed "The iFIT Team")`;
+- email_body (string, 3-5 sentences, friendly and professional, signed "The ${getCompany()} Team")`;
   return callGroq(sys, `Original notes: "${notes}"\nExtracted: ${JSON.stringify(extract)}\nRecommendation: ${JSON.stringify(recommend)}\nResponse: ${JSON.stringify(respond)}`);
 }
 
@@ -961,6 +1055,7 @@ document.getElementById('runBtn').addEventListener('click', async () => {
   hideError();
   const notes = document.getElementById('callInput').value.trim();
   if (!notes) { showError("Type or paste some call notes first."); return; }
+  if (getProducts().length === 0) { showError("Add at least one product under \"Selling for\" first."); return; }
 
   const runBtn = document.getElementById('runBtn');
   runBtn.disabled = true;
@@ -974,9 +1069,9 @@ document.getElementById('runBtn').addEventListener('click', async () => {
     setCardState(1, 'done');
     setCardBody(1, [
       fieldRow('Budget', extract.budget),
-      fieldRow('Space', extract.space),
-      fieldRow('Fitness level', extract.fitness_level),
-      fieldRow('Goals', extract.goals),
+      fieldRow('Timeline', extract.timeline),
+      fieldRow('Decision maker', extract.decision_maker),
+      fieldRow('Needs', extract.needs),
       fieldRow('Objection', extract.objection)
     ].join(''));
     updatePulseFill(30);
