@@ -25,12 +25,14 @@ Every analyzed call also rolls up into a **Team Pulse** dashboard — objections
 - Detects speakers automatically, guesses which one is the rep (you can change it, and Pulse remembers your name)
 - Call metrics computed in the browser, no AI needed: rep vs. prospect talk time, questions asked, longest rep monologue, and call length
 - Long calls are condensed to fit the model's limits, keeping the prospect's words first since that's where objections are
+- **Quote verification:** every objection quote the AI returns is checked against the transcript in code and badged ✓ Verbatim, ≈ Near-verbatim, ⚠ Said by rep, or ⚠ Not in transcript, so reps can see at a glance whether the AI is quoting or paraphrasing
 
 **Call Analysis**
 - Transcript, notes, or one-click samples (a cold call, a Teams discovery call, and three note-style scenarios)
 - Four-stage pipeline, each stage visible as its own card as it completes, with a per-stage latency badge
 - One-click copy on each objection response, the follow-up email, and the LinkedIn message
-- Automatically waits and retries if the free Groq rate limit is hit
+- Automatically waits and retries if the free Groq rate limit is hit, and retries when the model returns malformed JSON
+- Every analysis is saved in the browser: a **Recent calls** list on the home screen and clickable rows in Team Pulse reopen any past analysis
 
 **Live Objections**
 - For use during a call: type what the prospect just said (or tap a common one like "Just send me an email") and press Enter
@@ -56,7 +58,7 @@ Every analyzed call also rolls up into a **Team Pulse** dashboard — objections
 **Team Pulse**
 - Session stats: calls logged, top objection type, most-recommended product, meetings booked
 - Objections-by-type bar chart
-- Full call log table, exportable to CSV
+- Full call log table (persists across reloads), exportable to CSV, with a clear-history button
 
 ## Technologies used
 
@@ -65,7 +67,7 @@ Every analyzed call also rolls up into a **Team Pulse** dashboard — objections
 - **JavaScript (ES6+, vanilla)** — no build step, no bundler, no frontend framework
 - **Groq API** (`openai/gpt-oss-20b`) — LLM inference with JSON-mode structured output
 - **Fetch API** — all HTTP calls to Groq
-- **Web Storage API (`localStorage`)** — remembers each user's company name, product catalog, and rep name
+- **Web Storage API (`localStorage`)** — saves call history and remembers each user's company name, product catalog, and rep name
 - **FileReader API** — reads uploaded transcript files in the browser; nothing is uploaded to a server
 - **Clipboard API** (`navigator.clipboard`) — one-click copy on the generated email draft
 - **Blob / URL API** — generates and downloads the CSV export client-side, no server involved
@@ -96,6 +98,10 @@ Push to `main`; GitHub Pages deploys from the `main` branch. The Groq key ships 
 ## Design decisions — why I built it this way
 
 - **Transcripts in, not just notes.** Reps don't take good notes during calls, but almost every team already records them. Accepting the transcript exports those tools produce means Pulse works from what the prospect *actually* said, which is also what makes verbatim objection quotes and talk-time coaching possible.
+
+- **Verify the model's quotes instead of trusting them.** Language models sometimes paraphrase or invent quotes. Pulse fuzzy-matches each quote against what the prospect actually said and flags anything it can't find, including quotes the model attributed to the prospect that the rep actually said.
+
+- **Prompts tuned against real output.** Testing against the live model surfaced specific failures — a missed "just send me an email" brush-off, a made-up "Budget" category, a plan recommended outside its team-size range, an email claiming an attachment that didn't exist, and invented integrations. Each one got a targeted prompt fix, and categories are normalized in code so the dashboard stays consistent.
 
 - **Metrics in code, judgment in the model.** Talk ratio, question count, and monologue length are computed deterministically from the parsed transcript instead of asking the model to estimate them. The model gets those numbers as input for coaching, so it can't make them up.
 

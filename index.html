@@ -416,10 +416,13 @@
   .pill.accent { color: #ffb199; border-color: var(--accent-line); background: var(--accent-soft); }
   .pill.good { color: var(--ok); border-color: var(--ok-line); background: var(--ok-soft); }
   .pill.bad { color: var(--bad); border-color: var(--bad-line); background: var(--bad-soft); }
+  .pill.warn { color: #fbbf77; border-color: rgba(251, 191, 119, 0.32); background: rgba(251, 191, 119, 0.08); }
+  .vbadge { font-size: 11px; padding: 1px 7px; }
+  .verify-sum { margin-left: auto; font-weight: 500; }
   .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
   .muted { color: var(--text-faint); }
 
-  .obj-line { display: flex; gap: 8px; align-items: baseline; margin: 6px 0; }
+  .obj-line { display: flex; gap: 8px; align-items: baseline; margin: 6px 0; flex-wrap: wrap; }
   .obj-line i { color: var(--text-dim); }
 
   .product-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
@@ -627,6 +630,37 @@
   table.log-table .prod-tag { background: var(--accent-soft); color: #ffb199; padding: 2px 8px; border-radius: 100px; font-size: 12px; white-space: nowrap; }
   .empty-state { color: var(--text-faint); font-size: 13px; text-align: center; padding: 22px 0; }
 
+  .empty-wrap { margin-top: 28px; }
+  .empty-wrap .empty-hero { margin-top: 0; }
+  .recent { margin-top: 28px; display: none; }
+  .recent.show { display: block; }
+  .recent-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .recent-head h3 { font-size: 14px; font-weight: 600; margin: 0; }
+  .recent-list { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+  .recent-item {
+    display: flex; align-items: center; gap: 14px;
+    width: 100%; text-align: left;
+    background: none; border: none; border-bottom: 1px solid var(--line);
+    padding: 12px 16px; cursor: pointer; color: var(--text-dim);
+    transition: background .15s;
+  }
+  .recent-item:last-child { border-bottom: none; }
+  .recent-item:hover { background: var(--surface-2); }
+  .recent-main { flex: 1; min-width: 0; }
+  .recent-title { color: var(--text); font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .recent-sub { font-size: 12.5px; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .recent-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 12px; color: var(--text-faint); }
+  .saved-note {
+    display: none; align-items: center; gap: 8px;
+    font-size: 12.5px; color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .saved-note.show { display: flex; }
+  table.log-table tbody tr { cursor: pointer; }
+  table.log-table tbody tr:hover td { background: var(--surface-2); }
+  .head-actions { display: flex; gap: 6px; }
+  .btn.danger:hover { color: var(--bad); border-color: var(--bad-line); }
+
   footer { text-align: center; color: var(--text-faint); font-size: 12px; margin-top: 56px; }
 
   /* ---------- Responsive ---------- */
@@ -652,6 +686,7 @@
     .chip-btn { max-width: none; }
     .btn .kbd { display: none; }
     .rep-pick { margin-left: 0; }
+    .recent-meta .pill { display: none; }
     .live-box { flex-wrap: wrap; }
     .live-box .btn.primary { width: 100%; justify-content: center; }
     .metric { border-right: none; border-bottom: 1px solid var(--line); }
@@ -721,7 +756,8 @@
 
     <div class="error-banner" id="errorBanner"></div>
 
-    <div class="empty-hero" id="emptyState">
+    <div class="empty-wrap" id="emptyState">
+    <div class="empty-hero">
       <div class="feature">
         <div class="f-icon"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
         <h3>Qualify</h3><p>BANT, pain points, competitors, and buying signals pulled from the call.</p>
@@ -739,8 +775,17 @@
         <h3>Get coached</h3><p>Talk time, questions asked, and what to do better on the next call.</p>
       </div>
     </div>
+    <div class="recent" id="recentWrap">
+      <div class="recent-head">
+        <h3>Recent calls</h3>
+        <button class="btn" id="viewAllBtn">View all in Team pulse →</button>
+      </div>
+      <div class="recent-list" id="recentList"></div>
+    </div>
+    </div>
 
     <div class="results" id="results">
+      <div class="saved-note" id="savedNote"></div>
       <div class="stepper">
         <div class="step" id="step-1"><span class="s-dot"><span>1</span></span><span class="s-name">Qualify</span><span class="s-time" id="latency-1"></span></div>
         <div class="step" id="step-2"><span class="s-dot"><span>2</span></span><span class="s-name">Recommend</span><span class="s-time" id="latency-2"></span></div>
@@ -795,7 +840,7 @@
   <section class="panel" id="panel-pulse">
     <div class="intro">
       <h1>Team pulse</h1>
-      <p>Patterns across every call analyzed this session.</p>
+      <p>Patterns across every call you've analyzed. Saved in this browser — click a call to reopen it.</p>
     </div>
     <div class="stat-row">
       <div class="stat-card"><div class="label">Calls analyzed</div><div class="value" id="statCalls">0</div></div>
@@ -810,10 +855,13 @@
     <div class="box">
       <div class="box-head">
         <h3>Call log</h3>
+        <div class="head-actions">
+        <button class="btn outline danger" id="clearHistoryBtn">Clear history</button>
         <button class="btn outline" id="exportCsvBtn">
           <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
           Export CSV
         </button>
+        </div>
       </div>
       <div id="logTableWrap" class="table-wrap"><div class="empty-state">Nothing here yet.</div></div>
     </div>
@@ -1203,7 +1251,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function callGroq(systemPrompt, userPrompt, opts = {}) {
   if (!GROQ_KEY) throw new Error("No Groq key configured — check config.js.");
   const maxTokens = opts.maxTokens || 1500;
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 4; attempt++) {
     let res;
     try {
       res = await fetch(GROQ_URL, {
@@ -1225,7 +1273,7 @@ async function callGroq(systemPrompt, userPrompt, opts = {}) {
       throw new Error("Could not reach Groq. Check your connection and try again.");
     }
 
-    if (res.status === 429 && attempt < 2) {
+    if (res.status === 429 && attempt < 3) {
       const body = await res.text();
       const hinted = parseFloat(res.headers.get('retry-after')) ||
         parseFloat((body.match(/try again in ([\d.]+)s/i) || [])[1]) || 10;
@@ -1236,6 +1284,8 @@ async function callGroq(systemPrompt, userPrompt, opts = {}) {
     }
     if (!res.ok) {
       const body = await res.text();
+      // gpt-oss occasionally produces invalid JSON; Groq rejects it with json_validate_failed. Just retry.
+      if (res.status === 400 && /json_validate_failed/.test(body) && attempt < 3) continue;
       if (res.status === 429) throw new Error("Pulse is getting a lot of use right now — wait a minute and try again.");
       if (res.status === 413 || /context|too large|maximum/i.test(body)) throw new Error("That transcript is too long for the model — try a shorter section of the call.");
       throw new Error(`Groq API error (${res.status}): ${body.slice(0, 200)}`);
@@ -1246,9 +1296,11 @@ async function callGroq(systemPrompt, userPrompt, opts = {}) {
     try {
       return JSON.parse(content);
     } catch (e) {
+      if (attempt < 3) continue;
       throw new Error("Could not parse the model's response — try running it again.");
     }
   }
+  throw new Error("The model didn't return a usable answer after several tries — try running it again.");
 }
 
 // ---------------------------------------------------------------------------
@@ -1314,10 +1366,29 @@ document.addEventListener('keydown', e => {
 // Stage prompts
 // ---------------------------------------------------------------------------
 const OBJECTION_CATEGORIES = ["Price", "Timing", "Authority", "No need", "Competitor", "Status quo", "Brush-off", "Trust / risk", "Other"];
+const CATEGORY_ALIASES = [
+  [/budget|price|pric|cost|expens|afford|money|spend/i, "Price"],
+  [/time|timing|later|quarter|next year|busy|not now|month/i, "Timing"],
+  [/author|boss|decision|sign.?off|approv|director|vp|manager|check with/i, "Authority"],
+  [/no need|need|interest|value|priority|relevan/i, "No need"],
+  [/compet|already use|vendor|alternative|other tool|contract/i, "Competitor"],
+  [/status quo|happy|works fine|current process|spreadsheet/i, "Status quo"],
+  [/brush|email|send (me )?(some )?info|call (me )?back|not a good time|meeting/i, "Brush-off"],
+  [/trust|risk|security|complian|hipaa|privacy|reliab/i, "Trust / risk"]
+];
+function normalizeCategory(c) {
+  const s = String(c || '').trim();
+  const exact = OBJECTION_CATEGORIES.find(k => k.toLowerCase() === s.toLowerCase());
+  if (exact) return exact;
+  for (const [re, cat] of CATEGORY_ALIASES) if (re.test(s)) return cat;
+  return "Other";
+}
+
 
 function baseSystem() {
   return `You are an AI sales copilot for SDRs, BDRs, and account executives at ${getCompany()}. ` +
-    `Be concrete, use the prospect's own words, and never invent facts that aren't in the conversation. ` +
+    `Be concrete, use the prospect's own words, and never invent facts that aren't in the conversation or the catalog — ` +
+    `no made-up prices, discounts, features, attachments, or commitments. ` +
     `Always respond with ONLY a single valid JSON object, no markdown, no commentary.`;
 }
 
@@ -1327,33 +1398,39 @@ async function runExtract(input, onWait) {
     : "a rep's notes from a sales call";
   const sys = baseSystem() + `
 Analyze ${source}.
+Read EVERY prospect line before answering. Count as an objection any pushback, hesitation, or brush-off, including: "send me an email / some info", "call me later / next quarter", "not interested", "we already use X", "no budget", "too expensive", "I need to check with my boss", "we're fine with what we have", and requirements that could block the deal such as a security review, compliance, legal, or IT approval (category "Trust / risk"). One call often contains several — list each one separately.
 Return JSON with exactly these keys:
 - call_type: "cold call" | "discovery" | "demo" | "follow-up" | "other"
 - summary: 1-2 sentences
 - prospect: { "name": string, "title": string, "company": string } — "unknown" for anything not stated
-- bant: { "budget": string, "authority": string, "need": string, "timeline": string } — short phrases from the conversation, or "unknown"
+- key_facts: array of up to 5 concrete facts stated in the call (team or company size, industry, current tools, numbers, dates)
+- bant: { "budget": string, "authority": string (who signs off), "need": string, "timeline": string (when they would buy or implement — NOT the date of the next meeting; "unknown" if they never said) } — short phrases, or "unknown"
 - pain_points: array of up to 4 short strings
-- objections: array of up to 5 objects { "category": one of ${JSON.stringify(OBJECTION_CATEGORIES)}, "quote": the prospect's words (verbatim from a transcript, max 25 words), "summary": short phrase }. Include only real objections, pushback, or brush-offs. Empty array if none.
-- competitors: array of competitor or current-tool names mentioned (may be empty)
+- objections: array of up to 5 objects { "category": EXACTLY one of ${JSON.stringify(OBJECTION_CATEGORIES)} (use "Price" for anything about budget or cost, "Brush-off" for "send me info" / "call me later"), "quote": ${input.isTranscript ? 'the prospect\'s exact words copied from the transcript (max 25 words)' : 'the relevant words from the notes (max 25 words)'}, "summary": short phrase }. Empty array only if there is truly no pushback.
+- competitors: array of competitors AND current tools or workarounds they use today (e.g. "spreadsheets"), may be empty
 - buying_signals: array of up to 3 short strings
 - outcome: "meeting booked" | "follow-up scheduled" | "deal progressing" | "no clear next step" | "not interested"
 - sentiment: "positive" | "neutral" | "negative"`;
   const label = input.isTranscript ? "Transcript" : "Call notes";
-  return callGroq(sys, `${label}:\n"""\n${input.text}\n"""`, { maxTokens: 1600, onWait });
+  const out = await callGroq(sys, `${label}:\n"""\n${input.text}\n"""`, { maxTokens: 1800, onWait });
+  out.objections = arr(out.objections).map(o => ({ ...o, category: normalizeCategory(o.category) }));
+  return out;
 }
 
 async function runRecommend(extract, onWait) {
   const sys = baseSystem() + `
 Given the facts extracted from a sales call, recommend exactly one product from this catalog:
 ${catalogText()}
-Return JSON with keys: product (must match one catalog item's product name exactly — the part before " — "), fit ("strong" | "moderate" | "weak"), reason (1-2 sentences tied to what the prospect actually said).`;
-  return callGroq(sys, `Call facts: ${JSON.stringify(extract)}`, { maxTokens: 600, onWait });
+Respect each product's stated constraints (team size, budget level, required features) and check them against the key facts — never recommend a product whose stated range (e.g. team size) excludes this prospect. If budget is tight, prefer the smallest product that actually fits, and say so.
+Return JSON with keys: product (must match one catalog item's product name exactly — the part before " — "), fit ("strong" | "moderate" | "weak"), reason (1-2 sentences citing the specific facts that make it fit).`;
+  return callGroq(sys, `Call facts: ${JSON.stringify(extract)}`, { maxTokens: 700, onWait });
 }
 
 async function runObjections(extract, recommend, onWait) {
   const sys = baseSystem() + `
 You coach the rep on handling every objection from this call. For each objection, write what the rep can say out loud next time:
 acknowledge it, reframe with something relevant from the catalog below or the prospect's own pain, and end with a question that keeps the conversation going. Keep it natural and short, not scripted-sounding.
+Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state — if a detail would help, turn it into a question instead.
 Catalog:
 ${catalogText()}
 Return JSON with keys:
@@ -1361,7 +1438,9 @@ Return JSON with keys:
 - next_best_action: 1 sentence, the single most useful next step for the rep
 - discovery_questions: array of 3 questions to ask next time, targeting whatever is still unknown (budget, authority, need, timeline) or unclear
 - upsell_note: 1 sentence on whether/when to mention an upgrade or add-on from the catalog`;
-  return callGroq(sys, `Call facts: ${JSON.stringify(extract)}\nRecommended product: ${JSON.stringify(recommend)}`, { maxTokens: 1500, onWait });
+  const out = await callGroq(sys, `Call facts: ${JSON.stringify(extract)}\nRecommended product: ${JSON.stringify(recommend)}`, { maxTokens: 1600, onWait });
+  out.responses = arr(out.responses).map(r => ({ ...r, category: normalizeCategory(r.category) }));
+  return out;
 }
 
 async function runLog(extract, recommend, objections, metrics, onWait) {
@@ -1370,6 +1449,7 @@ async function runLog(extract, recommend, objections, metrics, onWait) {
     : `The input was rep notes, not a transcript, so base coaching on the facts only and keep it brief.`;
   const sys = baseSystem() + `
 Write the CRM record and follow-up for this call. Shape the CRM fields as if populating a Salesforce Task and Opportunity.
+Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state — if a detail would help, turn it into a question instead. Don't say anything is attached or already sent.
 ${coachingBasis}
 Return JSON with exactly these keys:
 - task_subject: <=80 chars, like a Salesforce Task.Subject, e.g. "Cold call: Budget objection - Growth Plan"
@@ -1388,6 +1468,7 @@ Return JSON with exactly these keys:
 async function runLiveObjection(said, onWait) {
   const sys = baseSystem() + `
 You are a live objection coach. The rep is on a call RIGHT NOW and the prospect just said something. Give the rep something they can say in the next few seconds.
+Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state — if a detail would help, turn it into a question instead.
 Catalog (for context):
 ${catalogText()}
 Return JSON with keys:
@@ -1395,7 +1476,65 @@ Return JSON with keys:
 - response: 1-2 sentences, natural and spoken, acknowledges then reframes
 - follow_up_question: one short question to keep them talking
 - alternative: one different short approach the rep could take instead`;
-  return callGroq(sys, `The prospect just said: "${said}"`, { maxTokens: 500, onWait });
+  const out = await callGroq(sys, `The prospect just said: "${said}"`, { maxTokens: 500, onWait });
+  out.category = normalizeCategory(out.category);
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Quote verification: check that each objection quote the model returned
+// actually appears in the transcript, and that the prospect (not the rep) said it.
+// ---------------------------------------------------------------------------
+const normText = s => String(s || '').toLowerCase()
+  .replace(/[\u2018\u2019]/g, "'").replace(/[\u2010-\u2015]/g, '-')
+  .replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+function bestOverlap(qTokens, srcTokens) {
+  const need = {};
+  qTokens.forEach(w => { need[w] = (need[w] || 0) + 1; });
+  const W = qTokens.length + 3;
+  let best = 0;
+  for (let i = 0; i < srcTokens.length; i++) {
+    if (!need[srcTokens[i]]) continue;
+    const have = {};
+    let hit = 0;
+    for (let j = i; j < Math.min(srcTokens.length, i + W); j++) {
+      const w = srcTokens[j];
+      if (need[w] && (have[w] || 0) < need[w]) { have[w] = (have[w] || 0) + 1; hit++; }
+    }
+    if (hit > best) best = hit;
+  }
+  return best / qTokens.length;
+}
+
+// Returns 'exact' | 'close' | 'rep' | 'missing'
+function verifyQuote(quote, prospectText, repText) {
+  const q = normText(quote);
+  if (!q) return 'missing';
+  const p = normText(prospectText), r = normText(repText);
+  if (p.includes(q)) return 'exact';
+  const qt = q.split(' ');
+  if (qt.length >= 3 && bestOverlap(qt, p.split(' ')) >= 0.8) return 'close';
+  if (r.includes(q) || (qt.length >= 3 && bestOverlap(qt, r.split(' ')) >= 0.8)) return 'rep';
+  return 'missing';
+}
+
+function speakerText(parsed, rep) {
+  const pros = [], reps = [];
+  parsed.turns.forEach(t => (t.speaker === rep ? reps : pros).push(t.text));
+  return { prospect: pros.join(' '), rep: reps.join(' ') };
+}
+
+const VERIFY_BADGE = {
+  exact: ['✓ Verbatim', 'good', 'Found word-for-word in what the prospect said'],
+  close: ['≈ Near-verbatim', '', 'Matches the prospect\'s words with small differences'],
+  rep: ['⚠ Said by rep', 'warn', 'These words came from the rep, not the prospect'],
+  missing: ['⚠ Not in transcript', 'warn', 'Could not find these words in the transcript — the AI may have paraphrased or invented them']
+};
+function verifyBadge(v) {
+  if (!v || !VERIFY_BADGE[v]) return '';
+  const [label, kind, title] = VERIFY_BADGE[v];
+  return `<span class="pill vbadge ${kind}" title="${esc(title)}">${label}</span>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -1440,7 +1579,9 @@ function showError(msg) {
   el.classList.add('show');
 }
 function hideError() {
-  document.getElementById('errorBanner').classList.remove('show');
+  const el = document.getElementById('errorBanner');
+  el.classList.remove('show');
+  el.textContent = '';
 }
 function resetCards() {
   for (let i = 1; i <= 4; i++) {
@@ -1453,14 +1594,18 @@ function resetCards() {
 function showResults(show) {
   document.getElementById('results').classList.toggle('show', show);
   document.getElementById('emptyState').style.display = show ? 'none' : '';
+  document.getElementById('savedNote').classList.remove('show');
 }
 function setLatency(n, text) {
   document.getElementById('latency-' + n).textContent = text;
 }
+let lastLatencies = [];
 async function timedStage(n, fn) {
   const start = performance.now();
   const result = await fn(secs => setCardWaiting(n, secs));
-  setLatency(n, Math.round(performance.now() - start) + 'ms');
+  const ms = Math.round(performance.now() - start);
+  lastLatencies[n - 1] = ms;
+  setLatency(n, ms + 'ms');
   return result;
 }
 
@@ -1493,6 +1638,13 @@ function renderMetrics(m) {
   strip.classList.add('show');
 }
 
+function verifySummary(objs) {
+  const checked = objs.filter(o => o.verified);
+  if (!checked.length) return '';
+  const ok = checked.filter(o => o.verified === 'exact' || o.verified === 'close').length;
+  return `<span class="verify-sum ${ok === checked.length ? 'good-h' : 'imp-h'}" style="color:${ok === checked.length ? 'var(--ok)' : '#fbbf77'}">${ok}/${checked.length} quotes verified</span>`;
+}
+
 function renderExtract(x) {
   const p = x.prospect || {};
   const who = [p.name, p.title].filter(known).join(' · ');
@@ -1507,8 +1659,8 @@ function renderExtract(x) {
     <div class="sub-head">Qualification</div>
     <div class="field-grid">${field('Budget', bant.budget)}${field('Authority', bant.authority)}${field('Need', bant.need)}${field('Timeline', bant.timeline)}</div>
     <div class="sub-head">Pain points</div>${list(x.pain_points)}
-    <div class="sub-head">Objections raised · ${objs.length}</div>
-    ${objs.length ? objs.map(o => `<div class="obj-line">${pill(o.category, 'accent')}<i>"${esc(o.quote)}"</i></div>`).join('') : '<p class="muted">No objections raised.</p>'}
+    <div class="sub-head">Objections raised · ${objs.length}${verifySummary(objs)}</div>
+    ${objs.length ? objs.map(o => `<div class="obj-line">${pill(o.category, 'accent')}<i>"${esc(o.quote)}"</i>${verifyBadge(o.verified)}</div>`).join('') : '<p class="muted">No objections raised.</p>'}
     ${arr(x.competitors).length ? `<div class="sub-head">Competitors &amp; current tools</div><div class="pill-row">${arr(x.competitors).map(c => pill(c)).join('')}</div>` : ''}
     ${arr(x.buying_signals).length ? `<div class="sub-head">Buying signals</div>${list(x.buying_signals)}` : ''}
   `;
@@ -1534,7 +1686,7 @@ function renderObjections(o) {
       const id = 'obj' + i;
       copyStore[id] = `${r.response || ''}${r.follow_up_question ? ' ' + r.follow_up_question : ''}`;
       return `<div class="obj-card">
-        <div class="obj-card-head">${pill(r.category, 'accent')}${copyBtn(id)}</div>
+        <div class="obj-card-head">${pill(r.category, 'accent')}${verifyBadge(r.verified)}${copyBtn(id)}</div>
         ${r.quote ? `<div class="quote">"${esc(r.quote)}"</div>` : ''}
         <div class="say"><span class="lbl">Say</span>${esc(r.response)}</div>
         <div class="ask"><span class="lbl">Then ask</span>${esc(r.follow_up_question)}</div>
@@ -1576,7 +1728,105 @@ function renderLog(l) {
 // ---------------------------------------------------------------------------
 // Session state for Team Pulse
 // ---------------------------------------------------------------------------
-let callLog = [];
+const STORE_KEY = 'pulse_calls_v1';
+const MAX_SAVED = 50;
+function loadCalls() {
+  try {
+    const a = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+    return Array.isArray(a) ? a.filter(c => c && c.extract && c.recommend && c.log) : [];
+  } catch (e) { return []; }
+}
+function saveCalls() {
+  const recent = callLog.slice(-MAX_SAVED);
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(recent)); }
+  catch (e) {
+    // Storage full: keep the analyses but drop the raw transcripts.
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(recent.map(c => ({ ...c, raw: '' })))); } catch (e2) {}
+  }
+}
+let callLog = loadCalls();
+
+function fmtWhen(ts) {
+  const d = new Date(ts);
+  if (isNaN(d)) return '';
+  const mins = Math.round((Date.now() - d) / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + 'm ago';
+  if (mins < 24 * 60) return Math.round(mins / 60) + 'h ago';
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+function fmtStamp(ts) {
+  const d = new Date(ts);
+  return isNaN(d) ? '' : d.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+function callTitle(c) {
+  const p = c.extract.prospect || {};
+  const name = [p.name, p.company].filter(known).join(' · ');
+  return name || cap(c.extract.call_type || 'Call');
+}
+function outcomeKind(o) { return o === 'meeting booked' || o === 'deal progressing' ? 'good' : (o === 'not interested' ? 'bad' : ''); }
+
+function renderRecent() {
+  const wrap = document.getElementById('recentWrap');
+  const items = callLog.slice(-5).reverse();
+  wrap.classList.toggle('show', items.length > 0);
+  document.getElementById('recentList').innerHTML = items.map(c => `
+    <button class="recent-item" data-open="${esc(c.id)}">
+      <div class="recent-main">
+        <div class="recent-title">${esc(callTitle(c))}</div>
+        <div class="recent-sub">${esc(c.extract.summary || '')}</div>
+      </div>
+      <div class="recent-meta">${pill(c.extract.outcome || 'unknown', outcomeKind(c.extract.outcome))}<span>${objList(c).length} obj.</span><span>${esc(fmtWhen(c.ts))}</span></div>
+    </button>`).join('');
+}
+
+function openCall(id) {
+  const c = callLog.find(x => x.id === id);
+  if (!c) return;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'call'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-call'));
+  hideError();
+  callInput.value = c.raw || '';
+  detectTranscript();
+  if (c.rep && currentParse && currentParse.speakers.includes(c.rep)) repSelect.value = c.rep;
+  resetCards();
+  showResults(true);
+  renderMetrics(c.metrics);
+  const bodies = [renderExtract(c.extract), renderRecommend(c.recommend), renderObjections(c.objections), renderLog(c.log)];
+  bodies.forEach((html, i) => {
+    setCardState(i + 1, 'done');
+    setCardBody(i + 1, html);
+    const ms = c.latencies && c.latencies[i];
+    setLatency(i + 1, ms ? ms + 'ms' : '');
+  });
+  const note = document.getElementById('savedNote');
+  note.innerHTML = `${pill('Saved analysis')}<span>${esc(fmtStamp(c.ts))}${c.raw ? '' : ' · original transcript not stored'}</span>`;
+  note.classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-open]');
+  if (b) openCall(b.dataset.open);
+});
+document.getElementById('viewAllBtn').addEventListener('click', () => document.querySelector('.tab-btn[data-tab=pulse]').click());
+
+let clearArmed = false;
+document.getElementById('clearHistoryBtn').addEventListener('click', e => {
+  const btn = e.currentTarget;
+  if (!callLog.length) return;
+  if (!clearArmed) {
+    clearArmed = true;
+    btn.textContent = 'Click again to clear';
+    setTimeout(() => { clearArmed = false; btn.textContent = 'Clear history'; }, 3000);
+    return;
+  }
+  clearArmed = false;
+  btn.textContent = 'Clear history';
+  callLog = [];
+  saveCalls();
+  renderPulse();
+  renderRecent();
+});
 
 document.getElementById('resetBtn').addEventListener('click', () => {
   callInput.value = '';
@@ -1584,6 +1834,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   hideError();
   resetCards();
   showResults(false);
+  renderRecent();
   callInput.focus();
 });
 
@@ -1598,7 +1849,7 @@ document.getElementById('exportCsvBtn').addEventListener('click', () => {
   const headers = ['Time', 'Call Type', 'Prospect', 'Objections', 'Recommended Product', 'Outcome', 'Opportunity Stage', 'Task Subject', 'Task Description', 'Next Step', 'Rep Talk %'];
   const csvEscape = v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`;
   const rows = callLog.map(c => [
-    c.time,
+    c.ts ? fmtStamp(c.ts) : c.time,
     c.extract.call_type,
     prospectLabel(c),
     objList(c).map(o => o.category).join('; '),
@@ -1622,6 +1873,9 @@ document.getElementById('exportCsvBtn').addEventListener('click', () => {
 
 function renderPulse() {
   document.getElementById('statCalls').textContent = callLog.length;
+  if (!callLog.length) {
+    ['statTopObjection', 'statTopProduct'].forEach(id => { document.getElementById(id).textContent = '—'; });
+  }
 
   const objCounts = {};
   const prodCounts = {};
@@ -1663,8 +1917,8 @@ function renderPulse() {
         <thead><tr><th>Time</th><th>Type</th><th>Prospect</th><th>Objections</th><th>Recommended</th><th>Outcome</th><th>Summary</th></tr></thead>
         <tbody>
           ${callLog.slice().reverse().map(c => `
-            <tr>
-              <td>${esc(c.time)}</td>
+            <tr data-open="${esc(c.id)}" title="Open this analysis">
+              <td style="white-space:nowrap">${esc(fmtWhen(c.ts))}</td>
               <td>${esc(c.extract.call_type || '')}</td>
               <td>${esc(prospectLabel(c) || '—')}</td>
               <td>${esc(objList(c).map(o => o.category).join(', ') || '—')}</td>
@@ -1717,7 +1971,10 @@ document.getElementById('runBtn').addEventListener('click', async () => {
   try {
     setCardLoading(1);
     updatePulseFill(10);
+    lastLatencies = [];
     const extract = await timedStage(1, w => runExtract(input, w));
+    const spoken = input.isTranscript ? speakerText(currentParse, repSelect.value) : null;
+    if (spoken) extract.objections.forEach(o => { o.verified = verifyQuote(o.quote, spoken.prospect, spoken.rep); });
     setCardState(1, 'done');
     setCardBody(1, renderExtract(extract));
     updatePulseFill(30);
@@ -1730,6 +1987,7 @@ document.getElementById('runBtn').addEventListener('click', async () => {
 
     setCardLoading(3);
     const objections = await timedStage(3, w => runObjections(extract, recommend, w));
+    if (spoken) objections.responses.forEach(r => { if (r.quote) r.verified = verifyQuote(r.quote, spoken.prospect, spoken.rep); });
     setCardState(3, 'done');
     setCardBody(3, renderObjections(objections));
     updatePulseFill(80);
@@ -1741,9 +1999,16 @@ document.getElementById('runBtn').addEventListener('click', async () => {
     updatePulseFill(100);
 
     callLog.push({
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      input, extract, recommend, objections, log, metrics
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      ts: new Date().toISOString(),
+      raw: raw.slice(0, 30000),
+      isTranscript: input.isTranscript,
+      rep: input.isTranscript ? repSelect.value : null,
+      extract, recommend, objections, log, metrics,
+      latencies: lastLatencies.slice()
     });
+    saveCalls();
+    renderRecent();
   } catch (err) {
     showError(err.message || String(err));
     updatePulseFill(0);
@@ -1824,6 +2089,8 @@ function renderLiveHistory() {
   `).join('') : '';
 }
 liveBtn.addEventListener('click', runLive);
+renderRecent();
+
 liveInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runLive(); }
 });
