@@ -357,13 +357,14 @@
 
   .stage-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 14px;
+    align-items: start;
     margin-top: 18px;
   }
 
   @media (max-width: 880px) {
-    .stage-grid { grid-template-columns: 1fr 1fr; }
+    .stage-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 540px) {
     .stage-grid { grid-template-columns: 1fr; }
@@ -447,7 +448,7 @@
     line-height: 1.55;
     flex: 1;
     overflow-y: auto;
-    max-height: 260px;
+    max-height: 480px;
   }
 
   .stage-body b, .stage-body strong { color: var(--text); }
@@ -462,6 +463,123 @@
     font-size: 12px;
   }
   .stage-body .field-row:last-child { border-bottom: none; }
+
+  .input-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .input-head label.title { margin-bottom: 0; }
+  .upload-btn { display: inline-block; }
+  textarea#callInput { min-height: 150px; }
+  textarea#callInput.dragging { border-color: var(--accent); background: rgba(255, 90, 60, 0.05); }
+
+  .transcript-bar {
+    display: none;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .transcript-bar.show { display: flex; }
+  .rep-pick select {
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 3px 6px;
+    font-family: var(--font);
+    font-size: 12px;
+    margin-left: 4px;
+  }
+  .condense-note { color: var(--text-faint); flex-basis: 100%; }
+  .condense-note:empty { display: none; }
+
+  .pill {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+  .pill.accent { color: #ff9b83; border-color: var(--accent-dim); background: rgba(255, 90, 60, 0.08); }
+  .pill.good { color: var(--ok); border-color: rgba(52, 211, 153, 0.35); background: rgba(52, 211, 153, 0.08); }
+  .pill.bad { color: #f87171; border-color: rgba(248, 113, 113, 0.35); background: rgba(248, 113, 113, 0.08); }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+
+  .stage-body .sub-head {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 14px 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .muted { color: var(--text-faint); }
+  .obj-line { margin: 4px 0 6px; }
+  .obj-card, .live-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .obj-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .obj-card-head .copy-btn { margin-left: auto; }
+  .quote { color: var(--text-faint); font-style: italic; margin-bottom: 6px; }
+  .draft {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 4px;
+  }
+  .wait-note { text-align: center; font-size: 11px; color: var(--text-faint); margin-top: 8px; }
+
+  .metrics-strip {
+    display: none;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .metrics-strip.show { display: grid; }
+  .metric {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .metric-val { font-size: 17px; font-weight: 700; color: var(--text); font-family: var(--mono); }
+  .metric-key { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+
+  .live-row { display: flex; gap: 10px; }
+  .live-row input {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    padding: 11px 14px;
+    outline: none;
+  }
+  .live-row input:focus { border-color: var(--accent-dim); }
+  .live-chips { margin: 12px 0 10px; }
+  .live-card { padding: 16px 18px; font-size: 14px; color: var(--text-dim); line-height: 1.55; }
+  .live-card b { color: var(--text); }
+  .live-say { font-size: 15px; margin: 0 0 8px; }
+  .live-card .obj-card-head .stage-latency { margin-left: 0; }
+  #liveHistory .sub-head { font-size: 11px; font-weight: 700; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; margin: 18px 0 8px; }
+  .live-past { font-size: 13px; color: var(--text-dim); padding: 8px 0; border-bottom: 1px solid var(--border-soft); }
+  @media (max-width: 540px) { .live-row { flex-direction: column; } .input-head { flex-wrap: wrap; } }
   .stage-body .field-key { color: var(--text-faint); }
   .stage-body .field-val { color: var(--text); text-align: right; }
 
@@ -615,7 +733,7 @@
       </div>
       <div>
         <h1>Pulse</h1>
-        <div class="sub">Sales call copilot</div>
+        <div class="sub">AI sales copilot for SDRs, BDRs &amp; AEs</div>
       </div>
     </div>
     <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
@@ -628,7 +746,8 @@
   </header>
 
   <nav class="tabs">
-    <button class="tab-btn active" data-tab="call">Call Assistant</button>
+    <button class="tab-btn active" data-tab="call">Call Analysis</button>
+    <button class="tab-btn" data-tab="live">Live Objections</button>
     <button class="tab-btn" data-tab="pulse">Team Pulse</button>
   </nav>
 
@@ -651,13 +770,23 @@
     </details>
 
     <div class="input-card">
-      <label class="title">What did the customer say?</label>
-      <textarea id="callInput" placeholder="Paste or type the call notes / customer's words here... e.g. &quot;They like the product but said it's more than they budgeted this quarter, and they need sign-off from their VP before committing.&quot;"></textarea>
+      <div class="input-head">
+        <label class="title" for="callInput">Call transcript or notes</label>
+        <label class="ghost-btn upload-btn" for="fileInput">Upload transcript</label>
+        <input type="file" id="fileInput" accept=".txt,.vtt,.srt,.md,.text,text/plain,text/vtt" hidden />
+      </div>
+      <textarea id="callInput" placeholder="Paste a transcript from Zoom, Teams, Google Meet, Gong, Chorus, Otter, or Fireflies — or drop a .txt / .vtt / .srt file here. Quick notes work too, e.g. &quot;Liked the demo but it's over budget this quarter; VP has to sign off.&quot;"></textarea>
+      <div class="transcript-bar" id="transcriptBar">
+        <span class="pill good">Transcript detected</span>
+        <span id="transcriptInfo"></span>
+        <span class="rep-pick">You are <select id="repSelect" aria-label="Which speaker is the rep"></select></span>
+        <span class="condense-note" id="condenseNote"></span>
+      </div>
       <div class="input-actions">
         <div class="samples" id="sampleBtns"></div>
         <div class="action-group">
           <button class="ghost-btn" id="resetBtn">New call</button>
-          <button class="run-btn" id="runBtn">Run call →</button>
+          <button class="run-btn" id="runBtn">Analyze call →</button>
         </div>
       </div>
     </div>
@@ -669,28 +798,45 @@
       <div class="pulse-line-fill" id="pulseFill"></div>
     </div>
 
+    <div class="metrics-strip" id="metricsStrip"></div>
+
     <div class="stage-grid" id="stageGrid">
       <div class="stage-card pending" id="card-1">
         <div class="stage-head"><div class="stage-num">1</div><div class="stage-title">Extract</div><span class="stage-latency" id="latency-1"></span></div>
-        <div class="stage-caption">Reads the raw call notes and pulls out budget, timeline, needs, and objections.</div>
+        <div class="stage-caption">Reads the call and pulls out BANT qualification, pain points, every objection (with the prospect's words), and the outcome.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
       <div class="stage-card pending" id="card-2">
         <div class="stage-head"><div class="stage-num">2</div><div class="stage-title">Recommend</div><span class="stage-latency" id="latency-2"></span></div>
-        <div class="stage-caption">Matches the extracted profile to the best-fit product and explains why.</div>
+        <div class="stage-caption">Matches the prospect to the best-fit product from your catalog and rates the fit.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
       <div class="stage-card pending" id="card-3">
-        <div class="stage-head"><div class="stage-num">3</div><div class="stage-title">Respond</div><span class="stage-latency" id="latency-3"></span></div>
-        <div class="stage-caption">Drafts a rebuttal for any objection and flags the upsell moment.</div>
+        <div class="stage-head"><div class="stage-num">3</div><div class="stage-title">Objections</div><span class="stage-latency" id="latency-3"></span></div>
+        <div class="stage-caption">A response and follow-up question for each objection, the next best action, and what to ask next time.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
       <div class="stage-card pending" id="card-4">
-        <div class="stage-head"><div class="stage-num">4</div><div class="stage-title">Log</div><span class="stage-latency" id="latency-4"></span></div>
-        <div class="stage-caption">Writes the CRM record fields and a follow-up email draft — shaped to map onto Salesforce Task + Opportunity objects.</div>
+        <div class="stage-head"><div class="stage-num">4</div><div class="stage-title">Log &amp; follow up</div><span class="stage-latency" id="latency-4"></span></div>
+        <div class="stage-caption">Salesforce-shaped CRM fields, a follow-up email, a LinkedIn message, and call coaching.</div>
         <div class="stage-body"><span class="placeholder-dot">Waiting for input</span></div>
       </div>
     </div>
+  </section>
+
+  <!-- LIVE OBJECTIONS -->
+  <section class="panel" id="panel-live">
+    <div class="input-card">
+      <label class="title" for="liveInput">What did the prospect just say?</label>
+      <div class="live-row">
+        <input type="text" id="liveInput" placeholder="e.g. &quot;We're locked into a contract with another vendor until June&quot;" autocomplete="off" />
+        <button class="run-btn" id="liveBtn">Get response →</button>
+      </div>
+      <div class="samples live-chips" id="liveChips"></div>
+      <div class="catalog-hint">Keep this tab open during calls. Press Enter for a response in about a second, based on your catalog under "Selling for".</div>
+    </div>
+    <div id="liveResult"></div>
+    <div id="liveHistory"></div>
   </section>
 
   <!-- TEAM PULSE -->
@@ -709,14 +855,14 @@
         <div class="value" id="statTopProduct">—</div>
       </div>
       <div class="stat-card">
-        <div class="label">This session</div>
-        <div class="value" id="statSession">0 min</div>
+        <div class="label">Meetings booked</div>
+        <div class="value" id="statMeetings">0</div>
       </div>
     </div>
 
     <div class="obj-panel">
-      <h3>Objections this session</h3>
-      <div id="objList"><div class="empty-state">No calls logged yet — run one from the Call Assistant tab.</div></div>
+      <h3>Objections by type this session</h3>
+      <div id="objList"><div class="empty-state">No calls logged yet — analyze one from the Call Analysis tab.</div></div>
     </div>
 
     <div class="log-panel">
@@ -740,34 +886,317 @@ const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 // Key comes from config.js so visitors don't need their own.
 const GROQ_KEY = (window.PULSE_CONFIG && window.PULSE_CONFIG.groqKey) || "";
 
+// Groq's free tier allows ~8k tokens/minute, so long transcripts are condensed
+// before analysis, and later stages work from the extracted facts, not the raw text.
+const MAX_TRANSCRIPT_CHARS = 10000;
+const MAX_NOTES_CHARS = 8000;
+
+const esc = s => String(s == null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+const arr = v => Array.isArray(v) ? v : [];
+const known = v => v && String(v).toLowerCase() !== 'unknown' && String(v).toLowerCase() !== 'none';
+
+// ---------------------------------------------------------------------------
+// Samples
+// ---------------------------------------------------------------------------
 const samples = [
   {
-    label: "Price objection",
+    label: "Cold call · transcript",
+    text: `[00:00] Jordan Lee: Hi Priya, this is Jordan from Acme Cloud. I know I'm catching you out of the blue, do you have 30 seconds?
+[00:06] Priya Shah: Uh, I'm about to jump into a meeting. What's this about?
+[00:09] Jordan Lee: Totally fair. I work with ops leaders at logistics companies who track client follow-ups in spreadsheets. Is that something your team deals with?
+[00:17] Priya Shah: I mean, yeah, we use spreadsheets and a shared inbox. It's messy but it works.
+[00:22] Jordan Lee: When it gets messy, what usually breaks?
+[00:25] Priya Shah: Honestly, stuff falls through the cracks when someone's out. We lost a renewal last month because nobody followed up.
+[00:31] Jordan Lee: Ouch. How big is the team handling those accounts?
+[00:34] Priya Shah: About 12 people. But look, we don't really have budget for new software this quarter.
+[00:39] Jordan Lee: Understood, most teams I talk to don't have it earmarked. Would it be worth 20 minutes to see if it pays for itself with one saved renewal?
+[00:47] Priya Shah: Maybe. Just send me an email with some info and I'll take a look.
+[00:51] Jordan Lee: Happy to. So I send the right thing, is it you who'd evaluate a tool like this, or someone else too?
+[00:57] Priya Shah: It'd be me and my director, Marcus. He signs off on anything with a contract.
+[01:03] Jordan Lee: Got it. How about I send a short email now and we pencil in Thursday at 2 for 20 minutes with you and Marcus?
+[01:09] Priya Shah: Thursday could work. Send the invite and I'll check with him.`
+  },
+  {
+    label: "Discovery · Teams .vtt",
+    text: `WEBVTT
+
+00:00:02.000 --> 00:00:07.500
+<v Alex Kim>Thanks for making time, Dana. To start, what prompted you to take this call?</v>
+
+00:00:08.000 --> 00:00:19.000
+<v Dana Ortiz>We're a 150-person healthcare company and our sales team lives in three different tools. Leadership wants one system before Q1 planning.</v>
+
+00:00:19.500 --> 00:00:24.000
+<v Alex Kim>What happens today when a rep needs the full picture on an account?</v>
+
+00:00:24.500 --> 00:00:38.000
+<v Dana Ortiz>They dig through email, a spreadsheet, and our old CRM. Managers can't forecast because nothing lines up. It's costing us deals, honestly.</v>
+
+00:00:38.500 --> 00:00:43.000
+<v Alex Kim>Who else is involved in choosing a new platform?</v>
+
+00:00:43.500 --> 00:00:56.000
+<v Dana Ortiz>Me, our VP of Sales, and our CIO. And any vendor has to pass a HIPAA security review with IT before we can sign, which has killed tools for us before.</v>
+
+00:00:56.500 --> 00:01:01.000
+<v Alex Kim>Makes sense. Are you looking at other options?</v>
+
+00:01:01.500 --> 00:01:12.000
+<v Dana Ortiz>We're also talking to Northwind CRM. Their pricing came in lower than your Enterprise plan, to be honest.</v>
+
+00:01:12.500 --> 00:01:17.000
+<v Alex Kim>Appreciate you telling me. What would make this a clear win for your VP?</v>
+
+00:01:17.500 --> 00:01:28.000
+<v Dana Ortiz>Getting reps onboarded fast. Last rollout took four months and adoption was terrible. If we can't be live by February, it's probably a next-year thing.</v>`
+  },
+  {
+    label: "Notes · price",
     text: "They like the product and the demo went well, but they said it's more than they budgeted for this quarter. Team of about 25. They'd need sign-off from their VP of Operations before committing to anything."
   },
   {
-    label: "Comparing competitors",
-    text: "They're evaluating us against two other vendors. Budget isn't the main concern — they care most about security reviews and SSO since they're a 400-person company in healthcare. They want to decide by end of next month."
+    label: "Notes · competitor",
+    text: "They're evaluating us against two other vendors. Budget isn't the main concern, they care most about security reviews and SSO since they're a 400-person company in healthcare. They want to decide by end of next month."
   },
   {
-    label: "Just browsing",
+    label: "Notes · browsing",
     text: "Said they're 'just looking around' and not ready to buy anything yet. Small team of 4, currently using spreadsheets, and mentioned they keep losing track of follow-ups with clients."
   }
 ];
 
+const callInput = document.getElementById('callInput');
 const sampleWrap = document.getElementById('sampleBtns');
 samples.forEach(s => {
   const btn = document.createElement('button');
   btn.className = 'sample-btn';
   btn.textContent = s.label;
-  btn.onclick = () => { document.getElementById('callInput').value = s.text; };
+  btn.onclick = () => { callInput.value = s.text; detectTranscript(); };
   sampleWrap.appendChild(btn);
 });
 
-// Clean up keys saved by the old client-side version of Pulse.
-try { localStorage.removeItem('pulse_groq_key'); } catch (e) {}
+// ---------------------------------------------------------------------------
+// Transcript parsing
+// Handles the common export shapes: WebVTT / SRT (Zoom, Teams, Meet),
+// "<v Name>" cues (Teams), "Name: text", "[00:05] Name: text",
+// and header-line formats like "Name  0:05" (Otter) or "0:05 | Name" (Gong).
+// ---------------------------------------------------------------------------
+const TS_RE = /(\d{1,2}):(\d{2})(?::(\d{2}))?(?:[.,]\d{1,3})?/;
 
-// --- Tabs ---
+function tsToSec(m) {
+  return m[3] !== undefined
+    ? (+m[1]) * 3600 + (+m[2]) * 60 + (+m[3])
+    : (+m[1]) * 60 + (+m[2]);
+}
+
+function looksLikeName(s) {
+  s = (s || '').trim();
+  if (!s || s.length > 40) return false;
+  if (/https?:|www\.|@/i.test(s)) return false;
+  const words = s.split(/\s+/);
+  if (words.length > 4) return false;
+  return words.every(w => /^[A-Z0-9(\[]/.test(w) || /^(de|da|van|von|la|le|del|di)$/.test(w));
+}
+
+function parseTranscript(raw) {
+  const lines = raw.replace(/\r\n?/g, '\n').split('\n');
+  const turns = [];
+  let cur = null;
+  let pendingSpeaker = null;
+  let firstTs = null, lastTs = null;
+
+  const noteTs = s => {
+    const m = (s || '').match(TS_RE);
+    if (!m) return;
+    const v = tsToSec(m);
+    if (firstTs === null) firstTs = v;
+    lastTs = Math.max(lastTs || 0, v);
+  };
+  const push = (speaker, text) => {
+    text = (text || '').trim();
+    if (!text) return;
+    if (cur && cur.speaker === speaker) cur.text += ' ' + text;
+    else { cur = { speaker, text }; turns.push(cur); }
+  };
+  const stripTags = s => s.replace(/<\/?[^>]+>/g, '').trim();
+  const cleanName = s => s.trim().replace(/^[\[(]+|[\])]+$/g, '').trim();
+
+  for (let line of lines) {
+    line = line.trim();
+    if (!line || /^WEBVTT/i.test(line) || /^(NOTE|STYLE|REGION)\b/.test(line) || /^\d+$/.test(line)) continue;
+
+    if (line.includes('-->')) {                       // VTT/SRT cue timing
+      line.split('-->').forEach(noteTs);
+      continue;
+    }
+
+    let m = line.match(/^<v\s+([^>]+)>(.*)$/i);       // Teams: <v Name>text</v>
+    if (m) { pendingSpeaker = cleanName(m[1]); push(pendingSpeaker, stripTags(m[2])); continue; }
+    line = stripTags(line);
+    if (!line) continue;
+
+    // Header lines: "Name  0:05", "Name - 00:05", "Name (00:05)"
+    m = line.match(/^(.{1,40}?)\s*[-|–·]?\s*[(\[]?(\d{1,2}:\d{2}(?::\d{2})?)[)\]]?$/);
+    if (m && looksLikeName(m[1])) { noteTs(m[2]); pendingSpeaker = cleanName(m[1]); continue; }
+    // Header lines: "0:05 | Name", "[00:05] Name"
+    m = line.match(/^[(\[]?(\d{1,2}:\d{2}(?::\d{2})?)[)\]]?\s*[-|–·]?\s*([^:.?!,]{1,40})$/);
+    if (m && looksLikeName(m[2])) { noteTs(m[1]); pendingSpeaker = cleanName(m[2]); continue; }
+    // Timestamp-only line
+    if (/^[(\[]?\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?[)\]]?$/.test(line)) { noteTs(line); continue; }
+
+    // "[00:05] Name: text" / "Name (00:05): text" / "Name: text"
+    let rest = line;
+    const lead = rest.match(/^[(\[]?(\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d{1,3})?)[)\]]?\s*[-|]?\s*/);
+    if (lead) { noteTs(lead[1]); rest = rest.slice(lead[0].length); }
+    m = rest.match(/^([^:]{1,40}?)\s*(?:[(\[](\d{1,2}:\d{2}(?::\d{2})?)[)\]])?\s*:\s+(.+)$/);
+    if (m && looksLikeName(m[1])) {
+      if (m[2]) noteTs(m[2]);
+      pendingSpeaker = cleanName(m[1]);
+      push(pendingSpeaker, m[3]);
+      continue;
+    }
+
+    push(pendingSpeaker || (cur && cur.speaker) || 'Unknown', rest);
+  }
+
+  const speakers = [...new Set(turns.map(t => t.speaker))];
+  const counts = {};
+  turns.forEach(t => { counts[t.speaker] = (counts[t.speaker] || 0) + 1; });
+  const isTranscript = turns.length >= 4 && speakers.filter(s => counts[s] >= 2 && s !== 'Unknown').length >= 2;
+  const durationSec = firstTs !== null && lastTs > firstTs ? lastTs - firstTs : null;
+  return { turns, speakers, isTranscript, durationSec };
+}
+
+// Guess which speaker is the rep: the remembered name if present, otherwise
+// whoever asks the most questions (reps usually drive with questions).
+function guessRep(parsed) {
+  let remembered = null;
+  try { remembered = localStorage.getItem('pulse_rep_name'); } catch (e) {}
+  if (remembered && parsed.speakers.includes(remembered)) return remembered;
+  const q = {};
+  parsed.turns.forEach(t => { q[t.speaker] = (q[t.speaker] || 0) + (t.text.match(/\?/g) || []).length; });
+  return parsed.speakers.filter(s => s !== 'Unknown').sort((a, b) => (q[b] || 0) - (q[a] || 0))[0];
+}
+
+function wordCount(s) { return (s.match(/\S+/g) || []).length; }
+
+function computeMetrics(parsed, rep) {
+  let repWords = 0, otherWords = 0, repQuestions = 0, prospectQuestions = 0, longestRep = 0;
+  parsed.turns.forEach(t => {
+    const w = wordCount(t.text);
+    const qs = (t.text.match(/\?/g) || []).length;
+    if (t.speaker === rep) { repWords += w; repQuestions += qs; longestRep = Math.max(longestRep, w); }
+    else { otherWords += w; prospectQuestions += qs; }
+  });
+  const total = repWords + otherWords || 1;
+  return {
+    rep_talk_pct: Math.round(repWords / total * 100),
+    prospect_talk_pct: Math.round(otherWords / total * 100),
+    rep_questions: repQuestions,
+    prospect_questions: prospectQuestions,
+    longest_rep_monologue_words: longestRep,
+    turns: parsed.turns.length,
+    duration: parsed.durationSec ? fmtDuration(parsed.durationSec) : null
+  };
+}
+
+function fmtDuration(sec) {
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = Math.round(sec % 60);
+  return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+}
+
+// Format turns as REP / PROSPECT lines and condense to fit the model budget.
+// Prospect words are kept preferentially (that's where objections live);
+// long rep turns are trimmed first, then middle-of-call turns are dropped.
+function buildTranscriptText(parsed, rep) {
+  const others = parsed.speakers.filter(s => s !== rep);
+  const label = sp => sp === rep ? `REP (${sp})` : `PROSPECT (${sp})`;
+  let items = parsed.turns.map(t => ({ rep: t.speaker === rep, line: `${label(t.speaker)}: ${t.text}` }));
+  const fullLen = items.reduce((n, i) => n + i.line.length + 1, 0);
+  const size = () => items.reduce((n, i) => n + (i ? i.line.length + 1 : 0), 0);
+
+  if (fullLen > MAX_TRANSCRIPT_CHARS) {
+    items.forEach(i => { if (i.rep && i.line.length > 320) i.line = i.line.slice(0, 300) + ' …'; });
+  }
+  let dropped = 0;
+  const budget = MAX_TRANSCRIPT_CHARS - 600; // room for omission markers
+  while (fullLen > MAX_TRANSCRIPT_CHARS && size() > budget) {
+    const live = items.map((i, idx) => i ? idx : -1).filter(i => i >= 0);
+    const lo = Math.floor(live.length * 0.2), hi = Math.ceil(live.length * 0.8);
+    const middle = live.slice(lo, hi);
+    let pick = middle.find(idx => items[idx].rep);
+    if (pick === undefined) pick = middle[Math.floor(middle.length / 2)];
+    if (pick === undefined) break;
+    items[pick] = null;
+    dropped++;
+  }
+  const out = [];
+  let gap = false;
+  items.forEach(i => {
+    if (!i) { if (!gap) out.push('[… part of the call omitted for length …]'); gap = true; }
+    else { out.push(i.line); gap = false; }
+  });
+  const text = out.join('\n');
+  const keptPct = Math.round(Math.min(1, text.length / fullLen) * 100);
+  return { text, condensed: fullLen > MAX_TRANSCRIPT_CHARS, keptPct, dropped };
+}
+
+// --- Live transcript detection in the input box ---
+let currentParse = null;
+const transcriptBar = document.getElementById('transcriptBar');
+const repSelect = document.getElementById('repSelect');
+
+function detectTranscript() {
+  const raw = callInput.value;
+  currentParse = raw.trim() ? parseTranscript(raw) : null;
+  if (!currentParse || !currentParse.isTranscript) {
+    transcriptBar.classList.remove('show');
+    currentParse = currentParse && currentParse.isTranscript ? currentParse : null;
+    return;
+  }
+  const prev = repSelect.value;
+  const speakers = currentParse.speakers.filter(s => s !== 'Unknown');
+  repSelect.innerHTML = speakers.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  repSelect.value = speakers.includes(prev) ? prev : guessRep(currentParse);
+  const dur = currentParse.durationSec ? ` · ${fmtDuration(currentParse.durationSec)} long` : '';
+  document.getElementById('transcriptInfo').textContent =
+    `${speakers.length} speakers · ${currentParse.turns.length} turns${dur}`;
+  const t = buildTranscriptText(currentParse, repSelect.value);
+  document.getElementById('condenseNote').textContent = t.condensed
+    ? `Long call: Pulse will analyze a condensed version (~${t.keptPct}% of the text, prospect's words kept first).`
+    : '';
+  transcriptBar.classList.add('show');
+}
+let detectTimer = null;
+callInput.addEventListener('input', () => { clearTimeout(detectTimer); detectTimer = setTimeout(detectTranscript, 250); });
+repSelect.addEventListener('change', () => {
+  try { localStorage.setItem('pulse_rep_name', repSelect.value); } catch (e) {}
+  detectTranscript();
+});
+
+// --- File upload + drag and drop ---
+function loadTranscriptFile(file) {
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showError('That file is over 2 MB. Export the transcript as .txt, .vtt, or .srt and try again.'); return; }
+  if (/\.(docx?|pdf)$/i.test(file.name)) { showError('Pulse reads plain-text transcripts (.txt, .vtt, .srt). Export or copy the transcript as text and try again.'); return; }
+  const reader = new FileReader();
+  reader.onload = () => { callInput.value = String(reader.result || ''); hideError(); detectTranscript(); };
+  reader.onerror = () => showError('Could not read that file.');
+  reader.readAsText(file);
+}
+document.getElementById('fileInput').addEventListener('change', e => { loadTranscriptFile(e.target.files[0]); e.target.value = ''; });
+callInput.addEventListener('dragover', e => { e.preventDefault(); callInput.classList.add('dragging'); });
+callInput.addEventListener('dragleave', () => callInput.classList.remove('dragging'));
+callInput.addEventListener('drop', e => {
+  e.preventDefault();
+  callInput.classList.remove('dragging');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) loadTranscriptFile(e.dataTransfer.files[0]);
+});
+
+// ---------------------------------------------------------------------------
+// Tabs
+// ---------------------------------------------------------------------------
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -775,52 +1204,69 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.add('active');
     document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
     if (btn.dataset.tab === 'pulse') renderPulse();
+    if (btn.dataset.tab === 'live') document.getElementById('liveInput').focus();
   });
 });
 
-// --- Groq call helper ---
-async function callGroq(systemPrompt, userPrompt) {
-  if (!GROQ_KEY) throw new Error("No Groq key configured — check config.js.");
-  let res;
-  try {
-    res = await fetch(GROQ_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + GROQ_KEY
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        temperature: 0.4,
-        max_tokens: 1500,
-        response_format: { type: "json_object" }
-      })
-    });
-  } catch (e) {
-    throw new Error("Could not reach Groq. Check your connection and try again.");
-  }
+// ---------------------------------------------------------------------------
+// Groq call helper (JSON mode, retries on rate limits)
+// ---------------------------------------------------------------------------
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-  if (!res.ok) {
-    const body = await res.text();
-    if (res.status === 429) throw new Error("Pulse is getting a lot of use right now — wait a minute and try again.");
-    throw new Error(`Groq API error (${res.status}): ${body.slice(0, 200)}`);
-  }
-  const data = await res.json();
-  const content = data.choices?.[0]?.message?.content;
-  if (!content) throw new Error("No content returned from Groq.");
-  try {
-    return JSON.parse(content);
-  } catch (e) {
-    throw new Error("Could not parse model response as JSON.");
+async function callGroq(systemPrompt, userPrompt, opts = {}) {
+  if (!GROQ_KEY) throw new Error("No Groq key configured — check config.js.");
+  const maxTokens = opts.maxTokens || 1500;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let res;
+    try {
+      res = await fetch(GROQ_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + GROQ_KEY },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt }
+          ],
+          temperature: 0.4,
+          max_tokens: maxTokens,
+          reasoning_effort: "low",
+          response_format: { type: "json_object" }
+        })
+      });
+    } catch (e) {
+      throw new Error("Could not reach Groq. Check your connection and try again.");
+    }
+
+    if (res.status === 429 && attempt < 2) {
+      const body = await res.text();
+      const hinted = parseFloat(res.headers.get('retry-after')) ||
+        parseFloat((body.match(/try again in ([\d.]+)s/i) || [])[1]) || 10;
+      const wait = Math.min(Math.ceil(hinted) + 1, 30);
+      if (opts.onWait) opts.onWait(wait);
+      await sleep(wait * 1000);
+      continue;
+    }
+    if (!res.ok) {
+      const body = await res.text();
+      if (res.status === 429) throw new Error("Pulse is getting a lot of use right now — wait a minute and try again.");
+      if (res.status === 413 || /context|too large|maximum/i.test(body)) throw new Error("That transcript is too long for the model — try a shorter section of the call.");
+      throw new Error(`Groq API error (${res.status}): ${body.slice(0, 200)}`);
+    }
+    const data = await res.json();
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) throw new Error("No content returned from the model — try running it again.");
+    try {
+      return JSON.parse(content);
+    } catch (e) {
+      throw new Error("Could not parse the model's response — try running it again.");
+    }
   }
 }
 
-// --- Stage prompts ---
-// --- Company + product catalog (editable in the UI, saved per browser) ---
+// ---------------------------------------------------------------------------
+// Company + product catalog (editable in the UI, saved per browser)
+// ---------------------------------------------------------------------------
 const DEFAULT_COMPANY = "Acme Cloud";
 const DEFAULT_PRODUCTS = [
   "Starter Plan — for teams under 10, simple setup, lowest price, monthly billing",
@@ -845,6 +1291,7 @@ function saveCatalog() {
 }
 function getCompany() { return companyInput.value.trim() || "our company"; }
 function getProducts() { return productsInput.value.split("\n").map(l => l.trim()).filter(Boolean); }
+function catalogText() { return getProducts().map(p => "- " + p).join("\n"); }
 function updateCatalogSummary() {
   document.getElementById('companyLabel').textContent = companyInput.value.trim() || '—';
   document.getElementById('productCount').textContent = getProducts().length;
@@ -858,48 +1305,97 @@ document.getElementById('catalogReset').addEventListener('click', () => {
 });
 loadCatalog();
 
-function stageSystemPrompt() {
-  return `You are part of an internal sales-call assistant for ${getCompany()}. Always respond with ONLY a single valid JSON object, no markdown, no commentary.`;
+// ---------------------------------------------------------------------------
+// Stage prompts
+// ---------------------------------------------------------------------------
+const OBJECTION_CATEGORIES = ["Price", "Timing", "Authority", "No need", "Competitor", "Status quo", "Brush-off", "Trust / risk", "Other"];
+
+function baseSystem() {
+  return `You are an AI sales copilot for SDRs, BDRs, and account executives at ${getCompany()}. ` +
+    `Be concrete, use the prospect's own words, and never invent facts that aren't in the conversation. ` +
+    `Always respond with ONLY a single valid JSON object, no markdown, no commentary.`;
 }
 
-async function runExtract(notes) {
-  const sys = stageSystemPrompt() + `
-Extract structured facts from raw sales call notes.
-Return JSON with exactly these keys: budget ("low"|"medium"|"high"|"unknown"), timeline (short string, e.g. "this month", "next quarter", or "unknown"), decision_maker (who signs off, short string, or "unknown"), needs (short string: what they're trying to solve), objection (short string or "none"), notes_summary (one sentence).`;
-  return callGroq(sys, `Call notes:\n"""${notes}"""`);
-}
-
-async function runRecommend(notes, extract) {
-  const sys = stageSystemPrompt() + `
-Given a customer profile, recommend exactly one product from this catalog:
-${getProducts().map(p => "- " + p).join("\n")}
-Return JSON with keys: product (string, must match one catalog item's product name exactly), reason (1-2 sentences tied to the customer's specific situation).`;
-  return callGroq(sys, `Original notes: "${notes}"\nExtracted profile: ${JSON.stringify(extract)}`);
-}
-
-async function runRespond(notes, extract, recommend) {
-  const sys = stageSystemPrompt() + `
-Draft a short, natural rebuttal a sales rep can say out loud in response to the customer's objection, plus a note on whether/when to mention an upgrade or add-on from this catalog:
-${getProducts().map(p => "- " + p).join("\n")}
-If the objection is "none", still suggest a good closing line and an upsell moment.
-Return JSON with keys: rebuttal (string, 1-3 sentences, conversational), upsell_note (1 sentence).`;
-  return callGroq(sys, `Original notes: "${notes}"\nExtracted profile: ${JSON.stringify(extract)}\nRecommended product: ${JSON.stringify(recommend)}`);
-}
-
-async function runLog(notes, extract, recommend, respond) {
-  const sys = stageSystemPrompt() + `
-Write CRM record fields and a short follow-up email draft based on the full call. Shape the fields as if populating a Salesforce Task and Opportunity record.
+async function runExtract(input, onWait) {
+  const source = input.isTranscript
+    ? "a sales call transcript. Lines starting with REP are our salesperson; lines starting with PROSPECT are the customer"
+    : "a rep's notes from a sales call";
+  const sys = baseSystem() + `
+Analyze ${source}.
 Return JSON with exactly these keys:
-- task_subject (string, <=80 chars, like a Salesforce Task.Subject, e.g. "Call: Price objection - Growth Plan")
-- task_description (string, 2-3 sentence professional call summary, like Task.Description)
-- opportunity_stage (string, one of: "Qualification", "Needs Analysis", "Proposal/Price Quote", "Negotiation/Review", "Closed Won", "Closed Lost" — like Opportunity.StageName, pick the best fit)
-- next_step (short string, like Task.ActivityDate follow-up note, e.g. "Send pricing sheet, follow up in 3 days")
-- email_subject (string)
-- email_body (string, 3-5 sentences, friendly and professional, signed "The ${getCompany()} Team")`;
-  return callGroq(sys, `Original notes: "${notes}"\nExtracted: ${JSON.stringify(extract)}\nRecommendation: ${JSON.stringify(recommend)}\nResponse: ${JSON.stringify(respond)}`);
+- call_type: "cold call" | "discovery" | "demo" | "follow-up" | "other"
+- summary: 1-2 sentences
+- prospect: { "name": string, "title": string, "company": string } — "unknown" for anything not stated
+- bant: { "budget": string, "authority": string, "need": string, "timeline": string } — short phrases from the conversation, or "unknown"
+- pain_points: array of up to 4 short strings
+- objections: array of up to 5 objects { "category": one of ${JSON.stringify(OBJECTION_CATEGORIES)}, "quote": the prospect's words (verbatim from a transcript, max 25 words), "summary": short phrase }. Include only real objections, pushback, or brush-offs. Empty array if none.
+- competitors: array of competitor or current-tool names mentioned (may be empty)
+- buying_signals: array of up to 3 short strings
+- outcome: "meeting booked" | "follow-up scheduled" | "deal progressing" | "no clear next step" | "not interested"
+- sentiment: "positive" | "neutral" | "negative"`;
+  const label = input.isTranscript ? "Transcript" : "Call notes";
+  return callGroq(sys, `${label}:\n"""\n${input.text}\n"""`, { maxTokens: 1600, onWait });
 }
 
-// --- Rendering helpers ---
+async function runRecommend(extract, onWait) {
+  const sys = baseSystem() + `
+Given the facts extracted from a sales call, recommend exactly one product from this catalog:
+${catalogText()}
+Return JSON with keys: product (must match one catalog item's product name exactly — the part before " — "), fit ("strong" | "moderate" | "weak"), reason (1-2 sentences tied to what the prospect actually said).`;
+  return callGroq(sys, `Call facts: ${JSON.stringify(extract)}`, { maxTokens: 600, onWait });
+}
+
+async function runObjections(extract, recommend, onWait) {
+  const sys = baseSystem() + `
+You coach the rep on handling every objection from this call. For each objection, write what the rep can say out loud next time:
+acknowledge it, reframe with something relevant from the catalog below or the prospect's own pain, and end with a question that keeps the conversation going. Keep it natural and short, not scripted-sounding.
+Catalog:
+${catalogText()}
+Return JSON with keys:
+- responses: array with one object per objection, in the same order: { "category": string, "quote": string, "response": 1-3 sentences to say, "follow_up_question": one question }
+- next_best_action: 1 sentence, the single most useful next step for the rep
+- discovery_questions: array of 3 questions to ask next time, targeting whatever is still unknown (budget, authority, need, timeline) or unclear
+- upsell_note: 1 sentence on whether/when to mention an upgrade or add-on from the catalog`;
+  return callGroq(sys, `Call facts: ${JSON.stringify(extract)}\nRecommended product: ${JSON.stringify(recommend)}`, { maxTokens: 1500, onWait });
+}
+
+async function runLog(extract, recommend, objections, metrics, onWait) {
+  const coachingBasis = metrics
+    ? `Base coaching on the call facts and these measured call metrics: ${JSON.stringify(metrics)}.`
+    : `The input was rep notes, not a transcript, so base coaching on the facts only and keep it brief.`;
+  const sys = baseSystem() + `
+Write the CRM record and follow-up for this call. Shape the CRM fields as if populating a Salesforce Task and Opportunity.
+${coachingBasis}
+Return JSON with exactly these keys:
+- task_subject: <=80 chars, like a Salesforce Task.Subject, e.g. "Cold call: Budget objection - Growth Plan"
+- task_description: 2-3 sentence professional call summary, like Task.Description
+- opportunity_stage: one of "Prospecting", "Qualification", "Needs Analysis", "Proposal/Price Quote", "Negotiation/Review", "Closed Won", "Closed Lost" — like Opportunity.StageName
+- next_step: short string, e.g. "Send recap + invite for Thu 2pm with Marcus"
+- email_subject: string
+- email_body: 3-6 sentences, friendly and specific to what they said, addresses their main objection, ends with a clear ask, signed "[Your name]\\n${getCompany()}"
+- linkedin_message: a short LinkedIn follow-up (max 300 characters), casual and specific
+- coaching: { "went_well": array of up to 2 short points, "improve": array of up to 2 short, specific points }`;
+  return callGroq(sys,
+    `Call facts: ${JSON.stringify(extract)}\nRecommendation: ${JSON.stringify(recommend)}\nObjection handling: ${JSON.stringify({ responses: objections.responses, next_best_action: objections.next_best_action })}`,
+    { maxTokens: 1600, onWait });
+}
+
+async function runLiveObjection(said, onWait) {
+  const sys = baseSystem() + `
+You are a live objection coach. The rep is on a call RIGHT NOW and the prospect just said something. Give the rep something they can say in the next few seconds.
+Catalog (for context):
+${catalogText()}
+Return JSON with keys:
+- category: one of ${JSON.stringify(OBJECTION_CATEGORIES)}
+- response: 1-2 sentences, natural and spoken, acknowledges then reframes
+- follow_up_question: one short question to keep them talking
+- alternative: one different short approach the rep could take instead`;
+  return callGroq(sys, `The prospect just said: "${said}"`, { maxTokens: 500, onWait });
+}
+
+// ---------------------------------------------------------------------------
+// Rendering helpers
+// ---------------------------------------------------------------------------
 function setCardState(n, state) {
   const card = document.getElementById('card-' + n);
   card.classList.remove('pending', 'active', 'done');
@@ -912,9 +1408,18 @@ function setCardLoading(n) {
   setCardState(n, 'active');
   setCardBody(n, '<div class="spinner"></div>');
 }
-function fieldRow(key, val) {
-  return `<div class="field-row"><span class="field-key">${key}</span><span class="field-val">${val}</span></div>`;
+function setCardWaiting(n, secs) {
+  setCardBody(n, `<div class="spinner"></div><div class="wait-note">Rate limit reached — continuing in ${secs}s…</div>`);
 }
+function fieldRow(key, val) {
+  return `<div class="field-row"><span class="field-key">${esc(key)}</span><span class="field-val">${esc(known(val) ? val : '—')}</span></div>`;
+}
+function pill(text, kind) { return `<span class="pill ${kind || ''}">${esc(text)}</span>`; }
+function list(items) {
+  const a = arr(items).filter(Boolean);
+  return a.length ? `<ul>${a.map(i => `<li>${esc(i)}</li>`).join('')}</ul>` : '<p class="muted">None noted.</p>';
+}
+function copyBtn(id) { return `<button class="copy-btn" data-copy="${id}">Copy</button>`; }
 function updatePulseFill(pct) {
   document.getElementById('pulseFill').style.width = pct + '%';
 }
@@ -932,6 +1437,7 @@ function resetCards() {
     setCardBody(i, '<span class="placeholder-dot">Waiting for input</span>');
     setLatency(i, '');
   }
+  document.getElementById('metricsStrip').classList.remove('show');
   updatePulseFill(0);
 }
 function setLatency(n, text) {
@@ -939,54 +1445,150 @@ function setLatency(n, text) {
 }
 async function timedStage(n, fn) {
   const start = performance.now();
-  const result = await fn();
+  const result = await fn(secs => setCardWaiting(n, secs));
   setLatency(n, Math.round(performance.now() - start) + 'ms');
   return result;
 }
 
-// --- Session state for Team Pulse ---
-let sessionStart = Date.now();
-let callLog = [];
-let lastEmailDraft = { subject: '', body: '' };
-
-async function copyEmailDraft() {
-  const text = `Subject: ${lastEmailDraft.subject}\n\n${lastEmailDraft.body}`;
+// Copy buttons: text is stored by id and copied on click (delegated).
+const copyStore = {};
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('[data-copy]');
+  if (!btn) return;
   try {
-    await navigator.clipboard.writeText(text);
-    const btn = document.getElementById('copyEmailBtn');
+    await navigator.clipboard.writeText(copyStore[btn.dataset.copy] || '');
     btn.textContent = 'Copied';
     btn.classList.add('copied');
     setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
-  } catch (e) {
+  } catch (err) {
     showError('Could not copy to clipboard — your browser may be blocking it.');
   }
+});
+
+function renderMetrics(m) {
+  const strip = document.getElementById('metricsStrip');
+  if (!m) { strip.classList.remove('show'); return; }
+  const cells = [
+    ['Rep talk time', m.rep_talk_pct + '%'],
+    ['Prospect talk time', m.prospect_talk_pct + '%'],
+    ['Questions rep asked', m.rep_questions],
+    ['Longest rep monologue', m.longest_rep_monologue_words + ' words'],
+    ['Turns', m.turns]
+  ];
+  if (m.duration) cells.push(['Call length', m.duration]);
+  strip.innerHTML = cells.map(([k, v]) => `<div class="metric"><div class="metric-val">${esc(v)}</div><div class="metric-key">${esc(k)}</div></div>`).join('');
+  strip.classList.add('show');
 }
 
+function renderExtract(x) {
+  const p = x.prospect || {};
+  const who = [p.name, p.title, p.company].filter(known).join(' · ');
+  const bant = x.bant || {};
+  const objs = arr(x.objections);
+  return `
+    <div class="pill-row">${pill(x.call_type || 'call')}${pill(x.outcome || 'unknown outcome', x.outcome === 'meeting booked' ? 'good' : (x.outcome === 'not interested' ? 'bad' : ''))}${pill((x.sentiment || 'neutral') + ' sentiment')}</div>
+    ${who ? `<p><b>${esc(who)}</b></p>` : ''}
+    <p>${esc(x.summary)}</p>
+    <div class="sub-head">Qualification (BANT)</div>
+    ${fieldRow('Budget', bant.budget)}${fieldRow('Authority', bant.authority)}${fieldRow('Need', bant.need)}${fieldRow('Timeline', bant.timeline)}
+    <div class="sub-head">Pain points</div>${list(x.pain_points)}
+    <div class="sub-head">Objections (${objs.length})</div>
+    ${objs.length ? objs.map(o => `<div class="obj-line">${pill(o.category, 'accent')} <i>"${esc(o.quote)}"</i></div>`).join('') : '<p class="muted">No objections raised.</p>'}
+    ${arr(x.competitors).length ? `<div class="sub-head">Competitors / current tools</div><p>${arr(x.competitors).map(esc).join(', ')}</p>` : ''}
+    ${arr(x.buying_signals).length ? `<div class="sub-head">Buying signals</div>${list(x.buying_signals)}` : ''}
+  `;
+}
+
+function renderRecommend(r) {
+  return `
+    <p><b>${esc(r.product)}</b> ${pill((r.fit || 'moderate') + ' fit', r.fit === 'strong' ? 'good' : (r.fit === 'weak' ? 'bad' : ''))}</p>
+    <p>${esc(r.reason)}</p>
+  `;
+}
+
+function renderObjections(o) {
+  const responses = arr(o.responses);
+  let html = '';
+  if (responses.length) {
+    html += responses.map((r, i) => {
+      const id = 'obj' + i;
+      copyStore[id] = `${r.response || ''}${r.follow_up_question ? ' ' + r.follow_up_question : ''}`;
+      return `<div class="obj-card">
+        <div class="obj-card-head">${pill(r.category, 'accent')}${copyBtn(id)}</div>
+        ${r.quote ? `<div class="quote">"${esc(r.quote)}"</div>` : ''}
+        <p><b>Say:</b> ${esc(r.response)}</p>
+        <p><b>Then ask:</b> ${esc(r.follow_up_question)}</p>
+      </div>`;
+    }).join('');
+  } else {
+    html += '<p class="muted">No objections to handle on this call.</p>';
+  }
+  html += `<div class="sub-head">Next best action</div><p>${esc(o.next_best_action)}</p>`;
+  html += `<div class="sub-head">Ask next time</div>${list(o.discovery_questions)}`;
+  if (o.upsell_note) html += `<div class="sub-head">Upsell</div><p>${esc(o.upsell_note)}</p>`;
+  return html;
+}
+
+function renderLog(l) {
+  copyStore.email = `Subject: ${l.email_subject || ''}\n\n${l.email_body || ''}`;
+  copyStore.linkedin = l.linkedin_message || '';
+  const c = l.coaching || {};
+  return `
+    ${fieldRow('Task.Subject', l.task_subject)}
+    ${fieldRow('Opportunity.StageName', l.opportunity_stage)}
+    <p style="margin-top:10px;"><b>Task.Description:</b> ${esc(l.task_description)}</p>
+    <p><b>Next step:</b> ${esc(l.next_step)}</p>
+    <div class="sub-head">Follow-up email ${copyBtn('email')}</div>
+    <div class="draft"><i>${esc(l.email_subject)}</i><br>${esc(l.email_body).replace(/\n/g, '<br>')}</div>
+    <div class="sub-head">LinkedIn message ${copyBtn('linkedin')}</div>
+    <div class="draft">${esc(l.linkedin_message)}</div>
+    <div class="sub-head">Coaching</div>
+    <p><b>Went well:</b></p>${list(c.went_well)}
+    <p><b>Try next time:</b></p>${list(c.improve)}
+  `;
+}
+
+// ---------------------------------------------------------------------------
+// Session state for Team Pulse
+// ---------------------------------------------------------------------------
+let callLog = [];
+
 document.getElementById('resetBtn').addEventListener('click', () => {
-  document.getElementById('callInput').value = '';
+  callInput.value = '';
+  detectTranscript();
   hideError();
   resetCards();
 });
 
+const objList = c => arr(c.extract.objections);
+const prospectLabel = c => {
+  const p = c.extract.prospect || {};
+  return [p.name, p.company].filter(known).join(', ');
+};
+
 document.getElementById('exportCsvBtn').addEventListener('click', () => {
   if (callLog.length === 0) { showError('No calls logged yet — run one first.'); return; }
-  const headers = ['Time', 'Objection', 'Recommended Product', 'Opportunity Stage', 'Task Subject', 'Task Description', 'Next Step'];
-  const csvEscape = v => `"${String(v || '').replace(/"/g, '""')}"`;
+  const headers = ['Time', 'Call Type', 'Prospect', 'Objections', 'Recommended Product', 'Outcome', 'Opportunity Stage', 'Task Subject', 'Task Description', 'Next Step', 'Rep Talk %'];
+  const csvEscape = v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`;
   const rows = callLog.map(c => [
     c.time,
-    c.extract.objection && c.extract.objection.toLowerCase() !== 'none' ? c.extract.objection : '',
+    c.extract.call_type,
+    prospectLabel(c),
+    objList(c).map(o => o.category).join('; '),
     c.recommend.product,
+    c.extract.outcome,
     c.log.opportunity_stage,
     c.log.task_subject,
     c.log.task_description,
-    c.log.next_step
+    c.log.next_step,
+    c.metrics ? c.metrics.rep_talk_pct : ''
   ].map(csvEscape).join(','));
   const csv = [headers.map(csvEscape).join(','), ...rows].join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `pulse-call-log-${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = `pulse-call-log-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 });
@@ -996,32 +1598,30 @@ function renderPulse() {
 
   const objCounts = {};
   const prodCounts = {};
+  let meetings = 0;
   callLog.forEach(c => {
-    const obj = c.extract.objection && c.extract.objection.toLowerCase() !== 'none' ? c.extract.objection : null;
-    if (obj) objCounts[obj] = (objCounts[obj] || 0) + 1;
+    objList(c).forEach(o => { const k = o.category || 'Other'; objCounts[k] = (objCounts[k] || 0) + 1; });
     const prod = c.recommend.product;
     if (prod) prodCounts[prod] = (prodCounts[prod] || 0) + 1;
+    if (c.extract.outcome === 'meeting booked') meetings++;
   });
 
-  const topObj = Object.entries(objCounts).sort((a,b) => b[1]-a[1])[0];
+  const topObj = Object.entries(objCounts).sort((a, b) => b[1] - a[1])[0];
   document.getElementById('statTopObjection').textContent = topObj ? topObj[0] : '—';
-
-  const topProd = Object.entries(prodCounts).sort((a,b) => b[1]-a[1])[0];
+  const topProd = Object.entries(prodCounts).sort((a, b) => b[1] - a[1])[0];
   document.getElementById('statTopProduct').textContent = topProd ? topProd[0].split(' — ')[0] : '—';
-
-  const mins = Math.max(1, Math.round((Date.now() - sessionStart) / 60000));
-  document.getElementById('statSession').textContent = mins + ' min';
+  document.getElementById('statMeetings').textContent = meetings;
 
   const objListEl = document.getElementById('objList');
-  const entries = Object.entries(objCounts).sort((a,b) => b[1]-a[1]);
+  const entries = Object.entries(objCounts).sort((a, b) => b[1] - a[1]);
   if (entries.length === 0) {
     objListEl.innerHTML = '<div class="empty-state">No objections logged yet.</div>';
   } else {
     const max = entries[0][1];
     objListEl.innerHTML = entries.map(([obj, count]) => `
       <div class="obj-bar-row">
-        <div class="obj-bar-label">${obj}</div>
-        <div class="obj-bar-track"><div class="obj-bar-fill" style="width:${(count/max*100)}%"></div></div>
+        <div class="obj-bar-label">${esc(obj)}</div>
+        <div class="obj-bar-track"><div class="obj-bar-fill" style="width:${(count / max * 100)}%"></div></div>
         <div class="obj-bar-count">${count}</div>
       </div>
     `).join('');
@@ -1033,15 +1633,17 @@ function renderPulse() {
   } else {
     logWrap.innerHTML = `
       <table class="log-table">
-        <thead><tr><th>Time</th><th>Objection</th><th>Recommended</th><th>Opportunity Stage</th><th>Summary</th></tr></thead>
+        <thead><tr><th>Time</th><th>Type</th><th>Prospect</th><th>Objections</th><th>Recommended</th><th>Outcome</th><th>Summary</th></tr></thead>
         <tbody>
           ${callLog.slice().reverse().map(c => `
             <tr>
-              <td>${c.time}</td>
-              <td>${c.extract.objection && c.extract.objection.toLowerCase() !== 'none' ? c.extract.objection : '—'}</td>
-              <td><span class="prod-tag">${(c.recommend.product || '').split(' — ')[0]}</span></td>
-              <td>${c.log.opportunity_stage || ''}</td>
-              <td>${c.log.task_description || ''}</td>
+              <td>${esc(c.time)}</td>
+              <td>${esc(c.extract.call_type || '')}</td>
+              <td>${esc(prospectLabel(c) || '—')}</td>
+              <td>${esc(objList(c).map(o => o.category).join(', ') || '—')}</td>
+              <td><span class="prod-tag">${esc((c.recommend.product || '').split(' — ')[0])}</span></td>
+              <td>${esc(c.extract.outcome || '')}</td>
+              <td>${esc(c.log.task_description || '')}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -1050,70 +1652,145 @@ function renderPulse() {
   }
 }
 
-// --- Main run flow ---
+// ---------------------------------------------------------------------------
+// Main run flow
+// ---------------------------------------------------------------------------
 document.getElementById('runBtn').addEventListener('click', async () => {
   hideError();
-  const notes = document.getElementById('callInput').value.trim();
-  if (!notes) { showError("Type or paste some call notes first."); return; }
+  const raw = callInput.value.trim();
+  if (!raw) { showError("Paste call notes or a transcript first (or upload a transcript file)."); return; }
   if (getProducts().length === 0) { showError("Add at least one product under \"Selling for\" first."); return; }
+
+  detectTranscript();
+  let input, metrics = null;
+  if (currentParse && currentParse.isTranscript) {
+    const rep = repSelect.value;
+    const built = buildTranscriptText(currentParse, rep);
+    input = { isTranscript: true, text: built.text };
+    metrics = computeMetrics(currentParse, rep);
+  } else {
+    if (raw.length > MAX_NOTES_CHARS) { showError(`Those notes are over ${MAX_NOTES_CHARS.toLocaleString()} characters. Trim them, or paste a transcript with speaker names so Pulse can condense it.`); return; }
+    input = { isTranscript: false, text: raw };
+  }
 
   const runBtn = document.getElementById('runBtn');
   runBtn.disabled = true;
   runBtn.textContent = "Running…";
   resetCards();
+  renderMetrics(metrics);
 
   try {
     setCardLoading(1);
     updatePulseFill(10);
-    const extract = await timedStage(1, () => runExtract(notes));
+    const extract = await timedStage(1, w => runExtract(input, w));
     setCardState(1, 'done');
-    setCardBody(1, [
-      fieldRow('Budget', extract.budget),
-      fieldRow('Timeline', extract.timeline),
-      fieldRow('Decision maker', extract.decision_maker),
-      fieldRow('Needs', extract.needs),
-      fieldRow('Objection', extract.objection)
-    ].join(''));
+    setCardBody(1, renderExtract(extract));
     updatePulseFill(30);
 
     setCardLoading(2);
-    const recommend = await timedStage(2, () => runRecommend(notes, extract));
+    const recommend = await timedStage(2, w => runRecommend(extract, w));
     setCardState(2, 'done');
-    setCardBody(2, `<p><b>${recommend.product}</b></p><p>${recommend.reason}</p>`);
+    setCardBody(2, renderRecommend(recommend));
     updatePulseFill(55);
 
     setCardLoading(3);
-    const respond = await timedStage(3, () => runRespond(notes, extract, recommend));
+    const objections = await timedStage(3, w => runObjections(extract, recommend, w));
     setCardState(3, 'done');
-    setCardBody(3, `<p><b>Say this:</b> "${respond.rebuttal}"</p><p><b>Upsell:</b> ${respond.upsell_note}</p>`);
+    setCardBody(3, renderObjections(objections));
     updatePulseFill(80);
 
     setCardLoading(4);
-    const log = await timedStage(4, () => runLog(notes, extract, recommend, respond));
+    const log = await timedStage(4, w => runLog(extract, recommend, objections, metrics, w));
     setCardState(4, 'done');
-    lastEmailDraft = { subject: log.email_subject || '', body: log.email_body || '' };
-    setCardBody(4, `
-      ${fieldRow('Task.Subject', log.task_subject)}
-      ${fieldRow('Opportunity.StageName', log.opportunity_stage)}
-      <p style="margin-top:10px;"><b>Task.Description:</b> ${log.task_description}</p>
-      <p><b>Next step:</b> ${log.next_step}</p>
-      <p><b>Follow-up email:</b> <button class="copy-btn" id="copyEmailBtn">Copy</button><br><i>${log.email_subject}</i><br>${log.email_body}</p>
-    `);
-    document.getElementById('copyEmailBtn').addEventListener('click', copyEmailDraft);
+    setCardBody(4, renderLog(log));
     updatePulseFill(100);
 
     callLog.push({
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      notes, extract, recommend, respond, log
+      input, extract, recommend, objections, log, metrics
     });
-
   } catch (err) {
     showError(err.message || String(err));
     updatePulseFill(0);
+    document.querySelectorAll('.stage-card.active').forEach(c => {
+      c.classList.remove('active');
+      c.classList.add('pending');
+      c.querySelector('.stage-body').innerHTML = '<span class="placeholder-dot">Stopped</span>';
+    });
   } finally {
     runBtn.disabled = false;
-    runBtn.textContent = "Run call →";
+    runBtn.textContent = "Analyze call →";
   }
+});
+
+// ---------------------------------------------------------------------------
+// Live objection helper
+// ---------------------------------------------------------------------------
+const COMMON_OBJECTIONS = [
+  "Just send me an email.",
+  "We're not interested.",
+  "We already use another tool for that.",
+  "We don't have budget right now.",
+  "Call me back next quarter.",
+  "I'm not the right person for this.",
+  "It's too expensive.",
+  "We're happy with how things are."
+];
+const liveInput = document.getElementById('liveInput');
+const liveBtn = document.getElementById('liveBtn');
+const liveResult = document.getElementById('liveResult');
+const liveChips = document.getElementById('liveChips');
+COMMON_OBJECTIONS.forEach(o => {
+  const b = document.createElement('button');
+  b.className = 'sample-btn';
+  b.textContent = o;
+  b.onclick = () => { liveInput.value = o; runLive(); };
+  liveChips.appendChild(b);
+});
+
+let liveHistory = [];
+async function runLive() {
+  const said = liveInput.value.trim();
+  if (!said) { liveInput.focus(); return; }
+  if (said.length > 1000) { liveResult.innerHTML = `<div class="error-banner show">Keep it to what they just said — under 1,000 characters.</div>`; return; }
+  liveBtn.disabled = true;
+  liveBtn.textContent = "Thinking…";
+  liveResult.innerHTML = '<div class="live-card"><div class="spinner"></div></div>';
+  const start = performance.now();
+  try {
+    const r = await runLiveObjection(said, secs => {
+      liveResult.innerHTML = `<div class="live-card"><div class="spinner"></div><div class="wait-note">Rate limit reached — continuing in ${secs}s…</div></div>`;
+    });
+    const ms = Math.round(performance.now() - start);
+    copyStore.live = `${r.response || ''}${r.follow_up_question ? ' ' + r.follow_up_question : ''}`;
+    liveResult.innerHTML = `
+      <div class="live-card">
+        <div class="obj-card-head">${pill(r.category || 'Other', 'accent')}<span class="stage-latency">${ms}ms</span>${copyBtn('live')}</div>
+        <div class="quote">"${esc(said)}"</div>
+        <p class="live-say"><b>Say:</b> ${esc(r.response)}</p>
+        <p class="live-say"><b>Then ask:</b> ${esc(r.follow_up_question)}</p>
+        <p class="muted"><b>Or try:</b> ${esc(r.alternative)}</p>
+      </div>`;
+    liveHistory.unshift({ said, r });
+    liveHistory = liveHistory.slice(0, 6);
+    renderLiveHistory();
+  } catch (err) {
+    liveResult.innerHTML = `<div class="error-banner show">${esc(err.message || String(err))}</div>`;
+  } finally {
+    liveBtn.disabled = false;
+    liveBtn.textContent = "Get response →";
+  }
+}
+function renderLiveHistory() {
+  const el = document.getElementById('liveHistory');
+  const past = liveHistory.slice(1);
+  el.innerHTML = past.length ? `<div class="sub-head">Earlier this call</div>` + past.map(h => `
+    <div class="live-past"><span class="pill accent">${esc(h.r.category || 'Other')}</span> <i>"${esc(h.said)}"</i><br>${esc(h.r.response)}</div>
+  `).join('') : '';
+}
+liveBtn.addEventListener('click', runLive);
+liveInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runLive(); }
 });
 </script>
 </body>
