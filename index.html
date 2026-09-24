@@ -1531,7 +1531,7 @@ async function runObjections(extract, recommend, onWait) {
   const sys = baseSystem() + `
 You coach the rep on handling every objection from this call. For each objection, write what the rep can say out loud next time:
 acknowledge it, reframe with something relevant from the catalog below or the prospect's own pain, and end with a question that keeps the conversation going. Keep it natural and short, not scripted-sounding.
-Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state — if a detail would help, turn it into a question instead.
+Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state, and never offer case studies, references, discounts, or free trials it doesn't mention — if a detail would help, turn it into a question instead.
 Catalog:
 ${catalogText()}
 Return JSON with keys:
@@ -1550,7 +1550,8 @@ async function runLog(extract, recommend, objections, metrics, onWait) {
     : `The input was rep notes, not a transcript, so base coaching on the facts only and keep it brief.`;
   const sys = baseSystem() + `
 Write the CRM record and follow-up for this call. Shape the CRM fields as if populating a Salesforce Task and Opportunity.
-Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state — if a detail would help, turn it into a question instead. Don't say anything is attached or already sent.
+Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state, and never offer case studies, references, discounts, or free trials it doesn't mention — if a detail would help, turn it into a question instead.
+Nothing has been sent or attached yet: never write "attached", "I've attached", "please find", "enclosed", or "as promised, here is". If the rep promised to send something, say you'll send it.
 ${coachingBasis}
 Return JSON with exactly these keys:
 - task_subject: <=80 chars, like a Salesforce Task.Subject, e.g. "Cold call: Budget objection - Growth Plan"
@@ -1569,7 +1570,7 @@ Return JSON with exactly these keys:
 async function runLiveObjection(said, onWait) {
   const sys = baseSystem() + `
 You are a live objection coach. The rep is on a call RIGHT NOW and the prospect just said something. Give the rep something they can say in the next few seconds.
-Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state — if a detail would help, turn it into a question instead.
+Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state, and never offer case studies, references, discounts, or free trials it doesn't mention — if a detail would help, turn it into a question instead.
 Catalog (for context):
 ${catalogText()}
 Return JSON with keys:
@@ -2452,7 +2453,8 @@ async function runDetect() {
   const sys = baseSystem() + `
 You are a live sales-call coach. A call is happening RIGHT NOW. Below are the latest lines (REP = our salesperson, PROSPECT = the customer${live.mode === 'mic' ? '; CALL = mixed audio from both sides' : ''}).
 Look ONLY at the lines marked >>>. If the prospect raises an objection, pushback, brush-off, concern, or a hard question there, give the rep something to say in the next few seconds. Otherwise, say there is nothing to respond to.
-Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state.
+Pain points or complaints about their current process (e.g. "things fall through the cracks") are NOT objections — they're buying signals, so return objection: false for them.
+Only use facts from the call and the catalog. Never offer case studies, references, discounts, free trials, or resources the catalog doesn't mention, and never promise implementation times, results, percentages, prices, or integrations it doesn't state.
 Catalog:
 ${catalogText()}
 Return JSON with keys:
