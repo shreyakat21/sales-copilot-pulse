@@ -76,23 +76,37 @@ Every analyzed call also rolls up into a **Team Pulse** dashboard — objections
 
 ## Running it locally
 
-No build step, no dependencies, no API key needed:
-
-```bash
-python3 -m http.server 8000
-# then visit http://localhost:8000
-```
+1. Create a `.env` file next to `index.html` (it's gitignored):
+   ```
+   GROQ_API_KEY=gsk_your_key_here
+   ```
+   Get a free key at https://console.groq.com/keys.
+2. Generate `config.js` from it (also gitignored):
+   ```bash
+   node scripts/build-config.mjs
+   ```
+3. Serve the folder and open it:
+   ```bash
+   python3 -m http.server 8000
+   # then visit http://localhost:8000
+   ```
 
 ## Deploying
 
-Push to `main`; GitHub Pages deploys from the `main` branch. The Groq key ships in `config.js`, so the live site works for anyone with the link.
+The Groq key is never committed. It's stored as a GitHub Actions secret and written into `config.js` at deploy time by `.github/workflows/deploy.yml`.
+
+One-time setup in the GitHub repo:
+1. **Settings → Secrets and variables → Actions → New repository secret:** name `GROQ_API_KEY`, value your Groq key
+2. **Settings → Pages → Build and deployment → Source:** choose **GitHub Actions**
+
+After that, every push to `main` builds and deploys the site automatically (see the **Actions** tab).
 
 ## Notes on architecture
 
 - Single HTML file, vanilla JS, no framework — kept intentionally simple for a fast build
 - Uses Groq's API (`openai/gpt-oss-20b`, low reasoning effort) via four sequential chat completion calls, one per stage, each using JSON mode for structured output
 - Transcripts are parsed in the browser into speaker turns, relabeled as `REP` / `PROSPECT`, and condensed to ~10k characters if needed. Only the Extract stage sees the transcript; later stages work from its structured output, which keeps each run within Groq's free-tier limit of 8,000 tokens per minute
-- The Groq key is bundled in `config.js` so visitors can use the tool without signing up for anything. Because it's a static site, that key is visible to anyone who inspects the page; the tradeoff is accepted for a demo, and the fix for production is a small backend proxy (e.g. a serverless function) that holds the key server-side.
+- The Groq key is kept out of the repo: it lives in a local `.env` for development and a GitHub Actions secret for deployment, and is written into `config.js` at build time so visitors can use the tool without signing up. Because it's a static site, the deployed key is still visible to anyone who inspects the live page; the fix for production is a small backend proxy (e.g. a serverless function) that holds the key server-side.
 - "Team Pulse" data is in-memory only (resets on page reload) — a real version would persist this server-side, but the front end already renders the aggregate view and CSV export it would need.
 
 ## Design decisions — why I built it this way

@@ -6,3 +6,7 @@ Thumbs.db
 .dev.vars
 .wrangler/
 node_modules/
+
+# Generated from .env / GitHub secret by scripts/build-config.mjs
+config.js
+_site/
