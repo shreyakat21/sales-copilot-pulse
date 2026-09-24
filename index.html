@@ -36,6 +36,7 @@
   }
 
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
@@ -590,6 +591,58 @@
   .live-ask { font-size: 15px; color: var(--text-dim); margin: 0 0 14px; }
   .live-ask .lbl, .live-alt .lbl { display: block; font-size: 11.5px; font-weight: 600; color: var(--text-faint); margin-bottom: 2px; }
   .live-alt { font-size: 13.5px; color: var(--text-faint); padding-top: 12px; border-top: 1px solid var(--line); margin: 0; }
+  .listen-card {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .listen-card[data-state="on"] { border-color: rgba(248, 113, 113, 0.35); }
+  .listen-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .listen-status { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--text-dim); min-width: 0; }
+  .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--surface-3); border: 1px solid var(--line-strong); flex-shrink: 0; }
+  .listen-card[data-state="on"] .rec-dot { background: #ef4444; border-color: #ef4444; animation: pulse-rec 1.4s ease-in-out infinite; }
+  .listen-card[data-state="wait"] .rec-dot { background: #fbbf77; border-color: #fbbf77; }
+  @keyframes pulse-rec { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, .5); } 50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } }
+  .listen-timer { font-family: var(--mono); font-size: 12px; color: var(--text-faint); }
+  .listen-actions { display: flex; gap: 8px; }
+  .meters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .meters[hidden] { display: none; }
+  .meter span:first-child { font-size: 12px; color: var(--text-faint); display: block; margin-bottom: 5px; }
+  .meter-track { height: 6px; border-radius: 6px; background: var(--surface-3); overflow: hidden; }
+  .meter-track span { display: block; height: 100%; width: 0; background: var(--ok); border-radius: 6px; transition: width .1s linear; }
+  #meterCall { background: var(--accent); }
+  .listen-note { display: none; margin-top: 12px; font-size: 12.5px; padding: 8px 12px; border-radius: 9px; }
+  .listen-note.show { display: block; }
+  .listen-note.warn { color: #fcd9a8; background: rgba(251, 191, 119, 0.08); border: 1px solid rgba(251, 191, 119, 0.28); }
+  .listen-help { margin: 14px 0 0; padding-left: 20px; font-size: 13px; color: var(--text-dim); display: grid; gap: 4px; }
+  .listen-help[hidden] { display: none; }
+  .listen-help b { color: var(--text); font-weight: 600; }
+
+  .live-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; align-items: start; margin-bottom: 8px; }
+  .live-grid[hidden] { display: none; }
+  .transcript-box { margin-bottom: 0; }
+  .live-transcript { max-height: 460px; overflow-y: auto; display: grid; gap: 10px; padding-right: 4px; }
+  .tl { display: grid; gap: 2px; }
+  .tl-meta { display: flex; align-items: baseline; gap: 8px; }
+  .tl-who { font-size: 12px; font-weight: 600; }
+  .tl.rep .tl-who { color: var(--ok); }
+  .tl.prospect .tl-who { color: #ffb199; }
+  .tl.call .tl-who { color: var(--text-dim); }
+  .tl-time { font-family: var(--mono); font-size: 10.5px; color: var(--text-faint); }
+  .tl-text { font-size: 13.5px; color: var(--text); line-height: 1.55; }
+  .tl.rep .tl-text { color: var(--text-dim); }
+  .suggest-head { font-size: 12px; font-weight: 600; color: var(--text-faint); margin-bottom: 8px; }
+  .live-card.sug { margin-bottom: 10px; padding: 16px 18px; }
+  .live-card.sug .live-say { font-size: 16px; }
+  .live-card.older { opacity: .72; }
+  .live-card.flash { animation: flash-in .5s ease; border-color: var(--accent-line); }
+  @keyframes flash-in { from { transform: translateY(-6px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .or-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0 14px; color: var(--text-faint); font-size: 12px; font-weight: 600; }
+  .or-divider::before, .or-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
   .history-head { font-size: 12px; font-weight: 600; color: var(--text-faint); margin: 26px 0 8px; }
   .live-past { font-size: 13px; color: var(--text-dim); padding: 12px 0; border-bottom: 1px solid var(--line); display: grid; gap: 4px; }
   .live-past .lp-top { display: flex; gap: 8px; align-items: center; }
@@ -666,6 +719,7 @@
   /* ---------- Responsive ---------- */
   @media (max-width: 900px) {
     .result-cols { grid-template-columns: 1fr; }
+    .live-grid { grid-template-columns: 1fr; }
     .empty-hero { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 760px) {
@@ -686,6 +740,8 @@
     .chip-btn { max-width: none; }
     .btn .kbd { display: none; }
     .rep-pick { margin-left: 0; }
+    .live-grid, .meters { grid-template-columns: 1fr; }
+    .listen-actions, .listen-actions .btn { width: 100%; justify-content: center; }
     .recent-meta .pill { display: none; }
     .live-box { flex-wrap: wrap; }
     .live-box .btn.primary { width: 100%; justify-content: center; }
@@ -706,7 +762,7 @@
     </div>
     <nav class="tabs" role="tablist">
       <button class="tab-btn active" data-tab="call">Call analysis</button>
-      <button class="tab-btn" data-tab="live">Live objections</button>
+      <button class="tab-btn" data-tab="live">Live call</button>
       <button class="tab-btn" data-tab="pulse">Team pulse</button>
     </nav>
     <div class="model-chip" title="Runs on Groq — no sign-up or API key needed">
@@ -823,9 +879,54 @@
   <!-- LIVE OBJECTIONS -->
   <section class="panel" id="panel-live">
     <div class="intro">
-      <h1>Live objection help</h1>
-      <p>Keep this open on your call. Type what the prospect just said and press Enter.</p>
+      <h1>Live call assistant</h1>
+      <p>Pulse listens to your call, transcribes both sides, and suggests a response the moment the prospect pushes back.</p>
     </div>
+
+    <div class="listen-card" id="listenCard">
+      <div class="listen-head">
+        <div class="listen-status"><span class="rec-dot"></span><span id="listenStatus">Not listening</span><span class="listen-timer" id="listenTimer"></span></div>
+        <div class="listen-actions">
+          <button class="btn primary" id="listenStart">
+            <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>
+            Start listening
+          </button>
+          <button class="btn outline" id="listenStop" hidden>
+            <svg class="i" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+            Stop
+          </button>
+        </div>
+      </div>
+      <div class="meters" id="meters" hidden>
+        <div class="meter"><span id="meterMicLabel">You (mic)</span><div class="meter-track"><span id="meterMic"></span></div></div>
+        <div class="meter" id="meterCallRow"><span>Prospect (call audio)</span><div class="meter-track"><span id="meterCall"></span></div></div>
+      </div>
+      <div class="listen-note" id="listenNote"></div>
+      <ol class="listen-help" id="listenHelp">
+        <li><b>Start listening</b> and allow your microphone.</li>
+        <li>Pick the <b>tab</b> your call is in (Zoom, Meet, or Teams on the web) and turn on <b>Share tab audio</b>. For a desktop app like Zoom or your dialer, pick <b>Entire screen</b> and turn on <b>Share system audio</b>.</li>
+        <li>Wear <b>headphones</b> so your mic only hears you. Works in Chrome and Edge on a computer.</li>
+      </ol>
+    </div>
+
+    <div class="live-grid" id="liveGrid" hidden>
+      <div class="box transcript-box">
+        <div class="box-head">
+          <h3>Live transcript</h3>
+          <div class="head-actions">
+            <button class="btn outline" id="copyTranscriptBtn" disabled>Copy</button>
+            <button class="btn outline" id="analyzeLiveBtn" disabled>Analyze full call →</button>
+          </div>
+        </div>
+        <div class="live-transcript" id="liveTranscript"></div>
+      </div>
+      <div class="suggest-col">
+        <div class="suggest-head">Suggested responses</div>
+        <div id="suggestions"></div>
+      </div>
+    </div>
+
+    <div class="or-divider"><span>Or type what they said</span></div>
     <div class="live-box">
       <span class="l-icon"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
       <input type="text" id="liveInput" placeholder="“We're locked into a contract with another vendor until June”" autocomplete="off" aria-label="What the prospect just said" />
@@ -2093,6 +2194,434 @@ renderRecent();
 
 liveInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runLive(); }
+});
+
+// ---------------------------------------------------------------------------
+// Live call listening
+// Captures two audio streams — the rep's microphone and the call audio from a
+// shared tab/screen — so every line is labeled by who said it without any
+// diarization guesswork. Each stream is cut into utterances with a simple
+// voice-activity detector, transcribed by Groq Whisper, and every new prospect
+// line is checked for objections in the background.
+// ---------------------------------------------------------------------------
+const WHISPER_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
+const WHISPER_MODEL = "whisper-large-v3-turbo";
+const VAD = {
+  tickMs: 100,
+  threshold: { rep: 0.02, prospect: 0.008 },
+  endSilenceMs: 900,     // cut an utterance after this much silence…
+  minSegmentMs: 3000,    // …but only once the segment is at least this long
+  maxSegmentMs: 15000,   // never let a segment grow past this
+  idleResetMs: 3000,     // restart silent segments so speech starts near the top
+  minSpeechMs: 450       // ignore blips shorter than this
+};
+// Whisper sometimes "hears" these in near-silence.
+const WHISPER_JUNK = /^(thank you|thanks|thanks for watching|you|bye|okay|oh|uh|um|hmm|\.+)[.!?]*$/i;
+
+const live = {
+  active: false,
+  mode: 'dual',           // 'dual' = mic + call audio, 'mic' = mic only
+  startedAt: 0,
+  ctx: null,
+  channels: [],
+  tickTimer: null,
+  clockTimer: null,
+  queue: Promise.resolve(),
+  pending: 0,
+  lines: [],
+  lastDetectIdx: 0,
+  detectBusy: false,
+  detectAgain: false,
+  suggestions: [],
+  warned: false
+};
+
+const $ = id => document.getElementById(id);
+const fmtClock = sec => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
+
+function pickMime() {
+  if (!window.MediaRecorder) return null;
+  for (const m of ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4']) {
+    if (MediaRecorder.isTypeSupported(m)) return m;
+  }
+  return '';
+}
+
+function listenSupported() {
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder && (window.AudioContext || window.webkitAudioContext));
+}
+
+function setListenStatus(text, state) {
+  $('listenStatus').textContent = text;
+  $('listenCard').dataset.state = state || '';
+}
+
+function updateQueueStatus() {
+  if (!live.active) return;
+  const who = live.mode === 'dual' ? 'your mic and the call' : 'your mic only';
+  setListenStatus(live.pending > 1 ? `Listening to ${who} · transcribing ${live.pending} clips…` : `Listening to ${who}`, 'on');
+}
+
+function showListenNote(msg, kind) {
+  const el = $('listenNote');
+  el.textContent = msg || '';
+  el.className = 'listen-note' + (msg ? ' show ' + (kind || '') : '');
+}
+
+// --- One audio channel: VAD + utterance-sized MediaRecorder segments ---
+function createChannel(role, stream, meterEl) {
+  const audioOnly = new MediaStream(stream.getAudioTracks());
+  const src = live.ctx.createMediaStreamSource(audioOnly);
+  const analyser = live.ctx.createAnalyser();
+  analyser.fftSize = 1024;
+  src.connect(analyser);
+  const buf = new Float32Array(analyser.fftSize);
+  const mime = pickMime();
+
+  const ch = { role, stream, rec: null, chunks: [], segStart: 0, speechStart: 0, speechMs: 0, silenceMs: 0, hadSpeech: false, stopped: false };
+
+  ch.startSegment = () => {
+    ch.chunks = [];
+    ch.speechMs = 0;
+    ch.silenceMs = 0;
+    ch.hadSpeech = false;
+    ch.segStart = performance.now();
+    ch.speechStart = 0;
+    try {
+      ch.rec = new MediaRecorder(audioOnly, mime ? { mimeType: mime } : undefined);
+    } catch (e) {
+      ch.rec = new MediaRecorder(audioOnly);
+    }
+    ch.rec.ondataavailable = e => { if (e.data && e.data.size) ch.chunks.push(e.data); };
+    ch.rec.onstop = () => {
+      const keep = ch.hadSpeech && ch.speechMs >= VAD.minSpeechMs;
+      if (keep && ch.chunks.length) {
+        const blob = new Blob(ch.chunks, { type: ch.rec.mimeType || mime || 'audio/webm' });
+        enqueueTranscription(blob, { role, t: Math.max(0, ((ch.speechStart || ch.segStart) - live.startedAt) / 1000), speechMs: ch.speechMs });
+      }
+      if (!ch.stopped && live.active) ch.startSegment();
+    };
+    ch.rec.start();
+  };
+
+  ch.tick = () => {
+    analyser.getFloatTimeDomainData(buf);
+    let sum = 0;
+    for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i];
+    const rms = Math.sqrt(sum / buf.length);
+    if (meterEl) meterEl.style.width = Math.min(100, Math.round(rms * 700)) + '%';
+    if (!ch.rec || ch.rec.state !== 'recording') return;
+
+    if (rms > VAD.threshold[role]) {
+      if (!ch.hadSpeech) ch.speechStart = performance.now();
+      ch.speechMs += VAD.tickMs; ch.silenceMs = 0; ch.hadSpeech = true;
+    }
+    else ch.silenceMs += VAD.tickMs;
+
+    const len = performance.now() - ch.segStart;
+    const endOfUtterance = ch.hadSpeech && ch.silenceMs >= VAD.endSilenceMs && len >= VAD.minSegmentMs;
+    const tooLong = len >= VAD.maxSegmentMs;
+    const idle = !ch.hadSpeech && len >= VAD.idleResetMs;
+    if (endOfUtterance || tooLong || idle) ch.rec.stop();
+  };
+
+  ch.stop = () => {
+    ch.stopped = true;
+    if (ch.rec && ch.rec.state === 'recording') ch.rec.stop();
+    stream.getTracks().forEach(t => t.stop());
+  };
+
+  return ch;
+}
+
+// --- Whisper transcription (sequential queue keeps lines in order) ---
+function enqueueTranscription(blob, info) {
+  live.pending++;
+  updateQueueStatus();
+  live.queue = live.queue
+    .then(() => transcribeClip(blob, info))
+    .catch(err => showListenNote(err.message || String(err), 'warn'))
+    .finally(() => { live.pending--; updateQueueStatus(); });
+}
+
+async function transcribeClip(blob, info) {
+  const ext = /ogg/.test(blob.type) ? 'ogg' : (/mp4/.test(blob.type) ? 'm4a' : 'webm');
+  const context = live.lines.slice(-4).map(l => l.text).join(' ').slice(-200);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const form = new FormData();
+    form.append('file', blob, `clip.${ext}`);
+    form.append('model', WHISPER_MODEL);
+    form.append('response_format', 'verbose_json');
+    form.append('language', 'en');
+    form.append('temperature', '0');
+    if (context) form.append('prompt', context);
+    let res;
+    try {
+      res = await fetch(WHISPER_URL, { method: 'POST', headers: { Authorization: 'Bearer ' + GROQ_KEY }, body: form });
+    } catch (e) {
+      throw new Error('Could not reach Groq to transcribe — check your connection.');
+    }
+    if (res.status === 429 && attempt < 2) {
+      const body = await res.text();
+      const hinted = parseFloat(res.headers.get('retry-after')) || parseFloat((body.match(/try again in ([\d.]+)s/i) || [])[1]) || 5;
+      showListenNote(`Groq's free transcription limit reached — catching up in ${Math.ceil(hinted)}s.`, 'warn');
+      await sleep(Math.min(Math.ceil(hinted) + 1, 20) * 1000);
+      showListenNote('');
+      continue;
+    }
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Transcription error (${res.status}): ${body.slice(0, 160)}`);
+    }
+    const data = await res.json();
+    const segs = Array.isArray(data.segments) ? data.segments : null;
+    let text = segs
+      ? segs.filter(s => !(s.no_speech_prob > 0.6 && s.avg_logprob < -0.7)).map(s => s.text).join(' ')
+      : (data.text || '');
+    text = text.replace(/\s+/g, ' ').trim();
+    if (!text || !/[a-z0-9]/i.test(text) || (WHISPER_JUNK.test(text) && info.speechMs < 1500)) return;
+    addLiveLine(info.role, text, info.t);
+    return;
+  }
+}
+
+// --- Transcript state ---
+function isEcho(text, t) {
+  // With speakers instead of headphones, the mic also picks up the prospect.
+  // Drop mic lines that closely match something the call audio just said.
+  if (live.mode !== 'dual') return false;
+  const q = normText(text).split(' ').filter(Boolean);
+  if (q.length < 3) return false;
+  return live.lines.some(l => l.role === 'prospect' && Math.abs(l.t - t) < 25 &&
+    bestOverlap(q, normText(l.text).split(' ')) >= 0.7);
+}
+
+function addLiveLine(role, text, t) {
+  if (role === 'rep' && isEcho(text, t)) return;
+  const effectiveRole = live.mode === 'mic' ? 'call' : role;
+  const last = live.lines[live.lines.length - 1];
+  if (last && last.role === effectiveRole && t - last.tEnd < 4) {
+    last.text += ' ' + text;
+    last.tEnd = t;
+    last.fresh = true;
+  } else {
+    live.lines.push({ role: effectiveRole, text, t, tEnd: t, fresh: true });
+    live.lines.sort((a, b) => a.t - b.t);
+  }
+  renderLiveTranscript();
+  if (effectiveRole !== 'rep') scheduleDetect();
+}
+
+function speakerLabel(role) {
+  if (role === 'rep') return 'You';
+  if (role === 'prospect') return 'Prospect';
+  return 'Call';
+}
+
+function renderLiveTranscript() {
+  const el = $('liveTranscript');
+  const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 60;
+  el.innerHTML = live.lines.length ? live.lines.map(l => `
+    <div class="tl ${l.role}">
+      <div class="tl-meta"><span class="tl-who">${speakerLabel(l.role)}</span><span class="tl-time">${fmtClock(l.t)}</span></div>
+      <div class="tl-text">${esc(l.text)}</div>
+    </div>`).join('') : '<div class="empty-state">Listening… each line shows up a few seconds after someone finishes speaking.</div>';
+  if (nearBottom) el.scrollTop = el.scrollHeight;
+  $('analyzeLiveBtn').disabled = live.lines.length < 2;
+  $('copyTranscriptBtn').disabled = !live.lines.length;
+}
+
+// --- Background objection detection on new prospect lines ---
+function scheduleDetect() {
+  if (live.detectBusy) { live.detectAgain = true; return; }
+  runDetect();
+}
+
+async function runDetect() {
+  live.detectBusy = true;
+  live.detectAgain = false;
+  const startIdx = live.lastDetectIdx;
+  const lines = live.lines;
+  const fresh = lines.filter(l => l.fresh && l.role !== 'rep');
+  lines.forEach(l => { l.fresh = false; });
+  if (!fresh.length) { live.detectBusy = false; return; }
+  live.lastDetectIdx = lines.length;
+
+  const label = r => r === 'rep' ? 'REP' : (r === 'prospect' ? 'PROSPECT' : 'CALL');
+  const window_ = lines.slice(-10).map(l => `${fresh.includes(l) ? '>>> ' : ''}${label(l.role)}: ${l.text}`).join('\n');
+  const sys = baseSystem() + `
+You are a live sales-call coach. A call is happening RIGHT NOW. Below are the latest lines (REP = our salesperson, PROSPECT = the customer${live.mode === 'mic' ? '; CALL = mixed audio from both sides' : ''}).
+Look ONLY at the lines marked >>>. If the prospect raises an objection, pushback, brush-off, concern, or a hard question there, give the rep something to say in the next few seconds. Otherwise, say there is nothing to respond to.
+Only use facts from the call and the catalog. Never promise implementation times, results, percentages, prices, or integrations with specific tools that the catalog doesn't state.
+Catalog:
+${catalogText()}
+Return JSON with keys:
+- objection: true or false
+- category: one of ${JSON.stringify(OBJECTION_CATEGORIES)}
+- quote: the prospect's words from the >>> lines (max 20 words)
+- response: 1-2 natural, spoken sentences that acknowledge then reframe
+- follow_up_question: one short question to keep them talking`;
+  try {
+    const out = await callGroq(sys, window_, { maxTokens: 500 });
+    if (out && out.objection === true && out.response) {
+      out.category = normalizeCategory(out.category);
+      const dup = live.suggestions.some(s => s.quote && out.quote &&
+        bestOverlap(normText(out.quote).split(' '), normText(s.quote).split(' ')) >= 0.7);
+      if (!dup) addSuggestion(out, fresh[fresh.length - 1].t);
+    }
+  } catch (e) {
+    showListenNote('Objection check failed: ' + (e.message || e), 'warn');
+  } finally {
+    live.detectBusy = false;
+    if (live.detectAgain) runDetect();
+  }
+}
+
+function addSuggestion(s, t) {
+  s.t = t;
+  s.id = 'sug' + live.suggestions.length;
+  live.suggestions.unshift(s);
+  copyStore[s.id] = `${s.response || ''}${s.follow_up_question ? ' ' + s.follow_up_question : ''}`;
+  renderSuggestions(true);
+}
+
+function renderSuggestions(flashFirst) {
+  const el = $('suggestions');
+  el.innerHTML = live.suggestions.length ? live.suggestions.map((s, i) => `
+    <div class="live-card sug${i === 0 && flashFirst ? ' flash' : ''}${i > 0 ? ' older' : ''}">
+      <div class="obj-card-head">${pill(s.category || 'Other', 'accent')}<span class="stage-latency" style="margin-left:0">${fmtClock(s.t || 0)}</span>${copyBtn(s.id)}</div>
+      ${s.quote ? `<div class="quote">"${esc(s.quote)}"</div>` : ''}
+      <p class="live-say">${esc(s.response)}</p>
+      ${s.follow_up_question ? `<p class="live-ask"><span class="lbl">Then ask</span>${esc(s.follow_up_question)}</p>` : ''}
+    </div>`).join('') : '<div class="empty-state">When the prospect pushes back, a suggested response appears here.</div>';
+}
+
+// --- Start / stop ---
+async function startListening() {
+  showListenNote('');
+  if (!listenSupported()) {
+    showListenNote('Live listening needs Chrome or Edge on a computer. You can still type what the prospect says below.', 'warn');
+    return;
+  }
+  if (!GROQ_KEY) { showListenNote('No Groq key configured — check config.js.', 'warn'); return; }
+
+  $('listenStart').disabled = true;
+  setListenStatus('Allow your microphone…', 'wait');
+  let mic;
+  try {
+    mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+  } catch (e) {
+    $('listenStart').disabled = false;
+    setListenStatus('Not listening', '');
+    showListenNote('Microphone access was blocked. Allow it from the icon in the address bar and try again.', 'warn');
+    return;
+  }
+
+  let call = null;
+  if (navigator.mediaDevices.getDisplayMedia) {
+    setListenStatus('Pick the tab or screen your call is in, and turn on "Share audio"…', 'wait');
+    try {
+      call = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+        systemAudio: 'include',
+        selfBrowserSurface: 'exclude',
+        surfaceSwitching: 'include'
+      });
+      if (!call.getAudioTracks().length) {
+        call.getTracks().forEach(t => t.stop());
+        call = null;
+        showListenNote('No audio was shared, so only your mic is being heard. Next time, turn on "Share tab audio" (or "Share system audio" for a desktop app).', 'warn');
+      }
+    } catch (e) {
+      call = null;
+      showListenNote('Call audio wasn\'t shared, so only your mic is being heard. Put the call on speaker, or stop and start again to share the call\'s tab or screen.', 'warn');
+    }
+  }
+
+  live.mode = call ? 'dual' : 'mic';
+  live.ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (live.ctx.state === 'suspended') await live.ctx.resume();
+  live.active = true;
+  live.startedAt = performance.now();
+  live.lines = [];
+  live.suggestions = [];
+  live.lastDetectIdx = 0;
+  live.pending = 0;
+  live.queue = Promise.resolve();
+
+  live.channels = [createChannel('rep', mic, $('meterMic'))];
+  if (call) {
+    live.channels.push(createChannel('prospect', call, $('meterCall')));
+    call.getVideoTracks().forEach(t => { t.enabled = false; });
+    call.getAudioTracks()[0].addEventListener('ended', () => {
+      if (live.active) showListenNote('Call audio sharing stopped. Only your mic is being heard now.', 'warn');
+    });
+  }
+  $('meterCallRow').style.display = call ? '' : 'none';
+  $('meterMicLabel').textContent = call ? 'You (mic)' : 'Mic (both sides if on speaker)';
+  live.channels.forEach(ch => ch.startSegment());
+  live.tickTimer = setInterval(() => live.channels.forEach(ch => ch.tick()), VAD.tickMs);
+  live.clockTimer = setInterval(() => { $('listenTimer').textContent = fmtClock((performance.now() - live.startedAt) / 1000); }, 500);
+
+  $('listenStart').hidden = true;
+  $('listenStart').disabled = false;
+  $('listenStop').hidden = false;
+  $('meters').hidden = false;
+  $('liveGrid').hidden = false;
+  $('listenHelp').hidden = true;
+  renderLiveTranscript();
+  renderSuggestions(false);
+  updateQueueStatus();
+}
+
+async function stopListening() {
+  if (!live.active) return;
+  live.active = false;
+  clearInterval(live.tickTimer);
+  clearInterval(live.clockTimer);
+  live.channels.forEach(ch => ch.stop());
+  setListenStatus('Finishing transcription…', 'wait');
+  $('listenStop').hidden = true;
+  await live.queue;
+  if (live.ctx) { try { await live.ctx.close(); } catch (e) {} }
+  $('meters').hidden = true;
+  $('listenStart').hidden = false;
+  $('listenStart').textContent = 'Start a new call';
+  setListenStatus(live.lines.length ? `Call ended · ${fmtClock(live.lines[live.lines.length - 1].t)} · ${live.lines.length} lines` : 'Call ended · nothing was transcribed', '');
+  renderLiveTranscript();
+}
+
+function liveTranscriptText() {
+  let repName = 'Rep';
+  try { repName = localStorage.getItem('pulse_rep_name') || 'Rep'; } catch (e) {}
+  if (!looksLikeName(repName) || repName === 'Prospect') repName = 'Rep';
+  const name = r => r === 'rep' ? repName : (r === 'prospect' ? 'Prospect' : 'Call');
+  return { repName, text: live.lines.map(l => `[${fmtClock(l.t)}] ${name(l.role)}: ${l.text}`).join('\n') };
+}
+
+$('listenStart').addEventListener('click', startListening);
+$('listenStop').addEventListener('click', stopListening);
+$('copyTranscriptBtn').addEventListener('click', async e => {
+  const btn = e.currentTarget;
+  try {
+    await navigator.clipboard.writeText(liveTranscriptText().text);
+    btn.textContent = 'Copied';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+  } catch (err) { showListenNote('Could not copy — your browser blocked the clipboard.', 'warn'); }
+});
+$('analyzeLiveBtn').addEventListener('click', async () => {
+  if (live.active) await stopListening();
+  const { repName, text } = liveTranscriptText();
+  if (!text) return;
+  document.querySelector('.tab-btn[data-tab=call]').click();
+  callInput.value = text;
+  detectTranscript();
+  if (currentParse && currentParse.speakers.includes(repName)) repSelect.value = repName;
+  document.getElementById('runBtn').click();
+});
+window.addEventListener('beforeunload', e => {
+  if (live.active) { e.preventDefault(); e.returnValue = ''; }
 });
 </script>
 </body>

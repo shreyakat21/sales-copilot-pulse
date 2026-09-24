@@ -34,6 +34,38 @@ Every analyzed call also rolls up into a **Team Pulse** dashboard — objections
 - Automatically waits and retries if the free Groq rate limit is hit, and retries when the model returns malformed JSON
 - Every analysis is saved in the browser: a **Recent calls** list on the home screen and clickable rows in Team Pulse reopen any past analysis
 
+**Live Call**
+- Click **Start listening**, allow the mic, and share the tab (or screen) your call is in, with audio. Works with Zoom, Google Meet, Teams, or any dialer, with no integration needed (Chrome or Edge on desktop)
+- Your mic and the call audio are captured as separate streams, so every line is labeled **You** or **Prospect** without guessing who's talking
+- A voice-activity detector cuts each stream into utterances, which are transcribed by Groq Whisper (`whisper-large-v3-turbo`) a few seconds after someone stops talking
+- Each new prospect line is checked for objections in the background; when one comes up, a suggested response and follow-up question pop up, ready to copy
+- Echo guard: if you're on speakers and your mic picks up the prospect, those duplicate lines are dropped
+- **Analyze full call** sends the finished transcript through the four-stage analysis
+- A typed mode is still there: type what the prospect said (or tap a common objection) and press Enter
+
+**Team Pulse** dashboard — objections by type, meetings booked, most-recommended product, and a running call log a manager can export to CSV, so patterns across the team are visible without compiling anything by hand.
+
+## Features
+
+**Your company & products**
+- Set your company name and product catalog (one product per line) — Pulse recommends only from that list and signs follow-up emails with your company name
+- Ships with an example catalog (a fictional B2B software company) so it works out of the box
+- Saved in the browser, so each rep's catalog sticks between visits
+
+**Transcript import**
+- Paste a transcript or upload / drag in a file: WebVTT (`.vtt`) and SubRip (`.srt`) from Zoom, Teams, and Google Meet; text exports from Gong, Chorus, Otter, and Fireflies; or any plain `Name: text` transcript, with or without timestamps
+- Detects speakers automatically, guesses which one is the rep (you can change it, and Pulse remembers your name)
+- Call metrics computed in the browser, no AI needed: rep vs. prospect talk time, questions asked, longest rep monologue, and call length
+- Long calls are condensed to fit the model's limits, keeping the prospect's words first since that's where objections are
+- **Quote verification:** every objection quote the AI returns is checked against the transcript in code and badged ✓ Verbatim, ≈ Near-verbatim, ⚠ Said by rep, or ⚠ Not in transcript, so reps can see at a glance whether the AI is quoting or paraphrasing
+
+**Call Analysis**
+- Transcript, notes, or one-click samples (a cold call, a Teams discovery call, and three note-style scenarios)
+- Four-stage pipeline, each stage visible as its own card as it completes, with a per-stage latency badge
+- One-click copy on each objection response, the follow-up email, and the LinkedIn message
+- Automatically waits and retries if the free Groq rate limit is hit, and retries when the model returns malformed JSON
+- Every analysis is saved in the browser: a **Recent calls** list on the home screen and clickable rows in Team Pulse reopen any past analysis
+
 **Live Objections**
 - For use during a call: type what the prospect just said (or tap a common one like "Just send me an email") and press Enter
 - Returns what to say, a follow-up question, and an alternative approach, based on your catalog
@@ -66,6 +98,8 @@ Every analyzed call also rolls up into a **Team Pulse** dashboard — objections
 - **CSS3** — custom properties (CSS variables) for theming, flexbox/grid layout, no framework or preprocessor
 - **JavaScript (ES6+, vanilla)** — no build step, no bundler, no frontend framework
 - **Groq API** (`openai/gpt-oss-20b`) — LLM inference with JSON-mode structured output
+- **Groq Whisper** (`whisper-large-v3-turbo`) — live speech-to-text
+- **MediaDevices / MediaRecorder / Web Audio APIs** — mic and shared-audio capture, voice-activity detection, audio clips
 - **Fetch API** — all HTTP calls to Groq
 - **Web Storage API (`localStorage`)** — saves call history and remembers each user's company name, product catalog, and rep name
 - **FileReader API** — reads uploaded transcript files in the browser; nothing is uploaded to a server
@@ -119,7 +153,9 @@ After that, every push to `main` builds and deploys the site automatically (see 
 
 - **Metrics in code, judgment in the model.** Talk ratio, question count, and monologue length are computed deterministically from the parsed transcript instead of asking the model to estimate them. The model gets those numbers as input for coaching, so it can't make them up.
 
-- **A live mode for objections.** Post-call analysis helps next time; SDRs also need help in the moment. The Live Objections tab is a single fast call with a short prompt, built to answer in about a second.
+- **Listen to the call instead of integrating with every dialer.** Tools like Gong or Zoom only share live transcripts through server-side APIs, which a static site can't receive. Capturing the rep's mic and the shared call audio in the browser works with any call software, and because the two sides arrive as separate streams, speaker labels are exact rather than guessed. Utterances are cut with a simple voice-activity detector so each Whisper request is one natural turn, which keeps latency low and stays inside Groq's free-tier limits.
+
+- **Help in the moment, not just after.** New prospect lines are checked for objections in the background with a short prompt, so a suggested response shows up a few seconds after the prospect pushes back.
 
 - **Four sequential stages instead of one big prompt.** Each stage (Extract → Recommend → Objections → Log & follow up) is a separate, inspectable API call rather than one call doing everything. That makes the reasoning traceable — a rep or manager can see exactly what the AI concluded at each step instead of getting an opaque final answer, which matters when reps and managers need to trust and explain what the tool suggested.
 
